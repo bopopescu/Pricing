@@ -1,0 +1,79 @@
+    <div class="modal-header" style=" background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+        <div class="container" style="width: 100%; padding-left: 60px;">
+            <h2>Actualiza Equipo</h2>
+            <form method="post" action="{% url 'availability:updateCarrier' form.instance.pk %}" class="updateCarrier-form">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-5 col-md-5">
+                        <div class="form-group form-md-line-input form-md-floating-label has-error">
+                            <label>Disponibles</label>
+                            {{ form.Disponibles }}
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5">
+                        <div class="form-group form-md-line-input form-md-floating-label has-error">
+                            <label>Ocupados</label>
+                            {{ form.Ocupado }}
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+            <div align="right">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+<script type="text/javascript">
+    var noUnidades={{equipo.NoUnidades}};
+    var Disponibles={{equipo.Disponibles}};
+    var Ocupado={{equipo.Ocupado}};
+    $('#id_Disponibles').on('change',function () {
+
+        if($(document.getElementById('id_Disponibles')).val()>=0)
+        {
+            if($(document.getElementById('id_Disponibles')).val()> Disponibles)
+            {
+                num = Disponibles+1;
+                num2 = Ocupado-1;
+            }
+            else
+            {
+                num = Disponibles-1;
+                num2 = Ocupado+1;
+            }
+            if (num2>=0 && num+num2==noUnidades) 
+            {
+                Disponibles = num;
+                Ocupado = num2;
+            }
+        }
+        $(document.getElementById('id_Ocupado')).val(Ocupado);
+        $(document.getElementById('id_Disponibles')).val(Disponibles);
+    });
+    $('#id_Ocupado').on('change',function () {
+        if($(document.getElementById('id_Ocupado')).val()>=0)
+        {
+            if($(document.getElementById('id_Ocupado')).val()> Ocupado)
+            {
+                num2 = Ocupado+1;
+                num = Disponibles-1;
+            }
+            else
+            {
+                num2 = Ocupado-1;
+                num = Disponibles+1;
+            }
+            if (num>=0 && num+num2==noUnidades) 
+            {
+                Disponibles = num;
+                Ocupado = num2;
+            }
+        }
+        $(document.getElementById('id_Ocupado')).val(Ocupado);
+        $(document.getElementById('id_Disponibles')).val(Disponibles);
+    });
+</script>

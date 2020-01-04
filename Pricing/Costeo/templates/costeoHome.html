@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style_block %}
+<link href="{% static 'assets/global/plugins/datatables/datatables.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block body_block %}
+<div class="portlet light portlet-fit portlet-datatable bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <span class="caption-subject font-red sbold uppercase"><i class="fas fa-calculator"></i> Costeos</span>
+            </div>
+            <div class="actions">
+                <a href="{% url 'Costeo:costeos' %}"><button type="button" class="btn btn-info"  > Nuevo</button></a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_5">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-search"></i></th>
+                        <th> Id</th>
+                        <th> Transportista </th>
+                        <th> Ruta</th>
+                        <th> Kilometraje </th>
+                        <th> Viaje</th>
+                        <th> Total Costos </th>
+                        <th> Mop </th>
+                        <th> % </th>
+                        <th> Total Transportista </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for costeo in costeo %}
+                        {% if costeo.Active == 1 %}
+                            <tr class="odd gradeX">
+                                <td><a href="#" onclick="getCosteo({{costeo.id}})"><i class="fas fa-search"></i></a>
+                                <a href="/costeo/updateCosteo/{{costeo.id}}"><i class="fas fa-wrench"></i></a></td>
+                                <td>{{costeo.id}}</td>
+                                <td>{{costeo.IDTransportista}}</td>
+                                <td>{{costeo.IDRuta}}</td>
+                                <td>{{costeo.Kilometraje}}</td>
+                                <td>{{costeo.Tipo}}</td>
+                                <td>{{costeo.TotalCostos}}</td>
+                                <td>{{costeo.Mop}}</td>
+                                <td>{{costeo.MopPor}}</td>
+                                <td>{{costeo.TotalTransportista}}</td>
+                            </tr>
+                        {% endif %}
+                    {%endfor%}
+                    
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-lg" style="width:90%">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_block %}
+
+<script src="{% static 'assets/global/scripts/datatable.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/datatables/datatables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/pages/scripts/table-datatables-managed.min.js' %}" type="text/javascript"></script>
+
+<script type="text/javascript">
+    function getCosteo(costeoID) {
+        $.ajax({
+              url:  "loadCosteo/"+costeoID+"/",
+              type: 'get',
+              dataType: 'json',
+              beforeSend: function () {
+                $("#myModal").modal("show");
+              },
+              success: function (data) {
+                $("#myModal .modal-content").html(data.Costeo_html);
+              }
+            });
+    }
+</script>
+{% endblock %}

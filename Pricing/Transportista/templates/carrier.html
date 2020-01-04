@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block style_block %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/Transportista/registra.css' %}">
+    <link href="{% static 'assets/global/plugins/datatables/datatables.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css' %}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/Transportista/scroll.css' %}">
+{% endblock %}
+{% block body_block %}
+<!-- BEGIN EXAMPLE TABLE PORTLET-->
+<div class="portlet light portlet-fit portlet-datatable bordered">
+    <div class="portlet-title">
+        <div class="caption">
+           
+            <span class="caption-subject font-red sbold uppercase"> <i class="fas fa-truck-moving font-red"></i>Transportistas</span>
+        </div>
+        <div class="actions">
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">Registrar</button>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_5">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-search"></i>&nbsp;<i class="fas fa-wrench"></i>&nbsp;<i class="far fa-trash-alt"></i>&nbsp;
+                    </th>
+                    <th> Rutas</th>
+                    <th> Id</th>
+                    <th> Razon Social</th>
+                    <th> Nombre Comercial </th>
+                    <th> Email</th>
+                    <th> Telefonos </th>
+                    <th> Nombre Contacto </th>
+                    <th> PaginaWeb </th>
+                    <th> Domicilio </th>
+                    <th> Colonia </th>
+                    <th> Estado </th>
+                    <th> Ciudad </th>
+                    <th> CP </th>
+                    <th> Base/Terminal </th>
+                    <th> Credito </th>
+                    <th> is_active</th>
+                    <th> Fecha Registro </th>
+                    <th> Usuario Alta </th>
+                    <th> Fecha Modificacion </th>
+                    <th> Usuario Modificacion </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for carrier in carriers %}
+                    {% if carrier.Active == 1 %}
+                        <tr class="odd gradeX">
+                            <td><a href="info/{{carrier.id }}/0/"><i class="fas fa-search"></i>{% if user.is_authenticated %}{% if user.roles == "administrator" %}</a>&nbsp;<a href="carrierUpdate/{{carrier.id }}/"><i class="fas fa-wrench"></i></a>&nbsp;<a href="carrierDelete/{{carrier.id }}/"><i class="far fa-trash-alt" style="color: red;"></i></a>{% endif %}{% endif %}</td>
+                            <td>
+                                <ul class="">
+                                    {% for ruta in carrier.IDRutas.all %}
+                                        <li><a href="{% url 'Rutas:routesUpdate' id=ruta.id%}">{{ruta.NombreRuta}}</a></li>
+                                    {% endfor %}
+                                    <li><a href="#" onclick="agregaRuta({{carrier.id }})">Agregar</a></li>
+                                </ul>
+                            </td>
+                            <td>{{carrier.id}}</td>
+                            <td>{{carrier.RazonSocial}}</td>
+                            <td>{{carrier.NombreComercial}}</td>
+                            <td>{{carrier.Email}}</td>
+                            <td>{{carrier.Telefonos}}</td>
+                            <td>{{carrier.NombreContacto}}</td>
+                            <td>{{carrier.PaginaWeb}}</td>
+                            <td>{{carrier.Domicilio}}</td>
+                            <td>{{carrier.Colonia}}</td>
+                            <td>{{carrier.Estado}}</td>
+                            <td>{{carrier.Ciudad}}</td>
+                            <td>{{carrier.CP}}</td>
+                            <td>{{carrier.BaseTerminal}}</td>
+                            <td>{{carrier.Credito}}</td>
+                            <td>{{carrier.Is_active}}</td>
+                            <td>{{carrier.Date_joined}}</td>
+                            <td>{{carrier.IDUsuarioAlta}}</td>
+                            <td>{{carrier.Date_Mod}}</td>
+                            <td>{{carrier.IDUsuarioMod}}</td>
+                        </tr>
+                    {%endif%}
+
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- END EXAMPLE TABLE PORTLET-->
+                            
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+                </div>
+                <div class="modal-body">
+
+                <h2>Transportista</h2>
+                    {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                        {% if error == "El correo ya existe" %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                    {{ form.RazonSocial }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                    {{ form.NombreComercial }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                    {{ form.Email }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                    {{ form.Telefonos }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                    {{ form.NombreContacto }}
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                    {{ form.PaginaWeb }}
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                    {{ form.BaseTerminal }}
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label">
+                                    {{ form.CP }}
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label">
+                                    {{ form.NumExt }}
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label">
+                                    {{ form.NumInt }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label">
+                                    {{ form.Calle }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                <div class="form-group form-md-line-input">
+                                    {{ form.Colonia }}
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label">
+                                    {{ form.Ciudad }}
+
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+                                <div class="form-group form-md-line-input form-md-floating-label">
+                                    {{ form.Estado }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <br> 
+                        <div class="form-group" style="width: 150px;">
+                            {{ form.Credito }}
+                        </div>
+                        
+                        
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                    <div align="right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="rutasModal">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_block %}
+    {% load static %}
+    <script src="{% static 'assets/global/scripts/datatable.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/global/plugins/datatables/datatables.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js' %}" type="text/javascript"></script>
+    <script src="{% static 'assets/pages/scripts/table-datatables-managed.min.js' %}" type="text/javascript"></script>
+    <script src="{% static 'js/codigosCP.js' %}"></script>
+    <script src="{% static 'js/Transportistas/saveform.js' %}"></script>
+{% endblock %}

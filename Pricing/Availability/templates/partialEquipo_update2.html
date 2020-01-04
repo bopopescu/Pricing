@@ -1,0 +1,38 @@
+<div class="modal-header" style=" background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+        <div class="container" style="width: 100%; padding-left: 60px;">
+            <h2>Actualiza Equipo</h2>
+           
+            <form method="post" action="{% url 'availability:update' form.instance.pk %}" class="js-book-update-form">
+                {% csrf_token %}
+                
+                <div class="row">
+				    <div class="col-lg-5 col-md-5">
+				        <div class="form-group form-md-line-input form-md-floating-label has-error">
+				            <label>Transportista</label><br>
+				            {{ transport.Carrier }}
+				        </div>
+				    </div>
+				    <div class="col-lg-5 col-md-5">
+				        <div class="form-group form-md-line-input form-md-floating-label has-error">
+				            <label>Rutas</label><br>
+				            {{ transport.rutas }}
+				        </div>
+				    </div>
+				</div>
+				<div class="row">
+				    <div class="col-lg-5 col-md-5">
+				        <div class="form-group form-md-line-input form-md-floating-label has-error">
+				            {{ form.NoUnidades }}
+				        </div>
+				    </div>
+				</div>
+                
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+            <div align="right">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+            </div>
+        </div>
+    </div>
