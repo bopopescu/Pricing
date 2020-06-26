@@ -1,8 +1,0 @@
-<option value="0">Categoria Ejes</option>
-{% for categoriaEje in categoriasEjes %}
-    {% if categoriaEje.id == idCE %}
-        <option value="{{categoriaEje.id}}" selected>{{categoriaEje.Nombre}}</option>
-    {% else %}
-        <option value="{{categoriaEje.id}}" >{{categoriaEje.Nombre}}</option>
-    {% endif %}
-{% endfor %}

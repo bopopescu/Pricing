@@ -1,8 +1,0 @@
-<option value="0">Tipo Unidad</option>
-{% for tipoUnidad in tiposUnidades %}
-    {% if tipoUnidad.id == IDTipoUnidad %}
-        <option value="{{tipoUnidad.id}}" selected>{{tipoUnidad.Nombre}}</option>
-    {% else %}
-        <option value="{{tipoUnidad.id}}" >{{tipoUnidad.Nombre}}</option>
-    {%endif%}
-{% endfor %}
