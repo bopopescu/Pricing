@@ -1,0 +1,515 @@
+<div class="modal-header" style=" background-color: rgb(66, 108, 140);">
+</div>
+<div class="modal-body">
+    <div class="container" style="width: 100%; padding-left: 60px;">
+		<div class="portlet-body">
+			<h1>Reporte</h1>
+			<div class="row">
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Empresa</label>
+						<div style="display: block;"> {{ costeo.Empresa }} </div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Ruta</label>
+						<div style="display: block;"> {{ costeo.IDRuta.NombreRuta }} </div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Kilometros</label>
+						<div style="display: block;" id="kilometros"></div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Ciudad Origen</label>
+						<div style="display:block">{{ costeo.IDRuta.CiudadOrigen }}</div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Estado Origen</label>
+						<div style="display: block;">{{ costeo.IDRuta.EstadoOrigen }}</div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>CP Origen</label>
+						<div style="display:block;"> {{ costeo.CPOrigen }} </div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Ciudad Destino</label>
+						<div style="display: block;">{{ costeo.IDRuta.CiudadDestino }}</div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Estado Destino</label>
+						<div style="display: block;">{{ costeo.IDRuta.EstadoDestino }}</div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>CP Destino</label>
+						<div style="display: block;">{{ costeo.CPDestino }}</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Tipo Unidad</label>
+						<div style="display: block;">{{ costeo.IDTipoUnidad.Nombre }}</div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Modelo</label>
+						<div style="display: block;" id="Modelo"></div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Casetas</label>
+						<div style="display: block;" id="casetas"></div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Viaje Redondo</label>
+						<div style="display: block;" id="viajeRedondo"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-2 col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Total Costo</label>
+						<div style="display:block;" id="totalCosto"></div>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Factor de Ajuste %</label>
+						<div style="display: block;">{{ costeo.FactorAjustePor }}</div>
+					</div>
+				</div>
+
+				<div class="col-lg-2 col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Factor de Ajuste</label>
+						<div style="display: block;" id="factorAjuste"></div>
+					</div>
+				</div>
+
+				<div class="col-lg-1 col-md-1">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>%</label>
+						<div style="display: block;">{{ costeo.MopPor }}</div>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Mop</label>
+						<div style="display: block;" id="mop"></div>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-2">
+					<div class="form-group form-md-line-input form-md-floating-label has-error">
+						<label>Total Transportista</label>
+						<div style="display: block;" id="totalTransportista"></div>
+					</div>
+				</div>
+			</div>
+			<button class="btn btn-primary"  onclick="ocultaPremisas()">Premisas</button>
+			<button type="button" style="float: right;" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+		</div>
+
+		<br>
+		<div class="container" id="PreimisasHide" style="display: none">
+			<div class="col-lg-4 col-md-4">
+				<table class="table table-striped table-bordered table-hover" id="" >
+					<thead>
+						<tr>
+						  <th scope="col">Depreciación</th>
+						  <th style="text-align:right; " id="tdMeses">{{costeo.IDDepreciacion.Meses}}</th>
+						  <th scope="col">Meses</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Costo Unidad </td>
+						  <td style="text-align:right; "  id="tdCostoUnidad">{{costeo.IDDepreciacion.CostosUnidad}}</td>
+						  <td id="tdUnidad"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Costo Caja</td>
+						  <td style="text-align:right; " id="tdCostosCaja">{{costeo.IDDepreciacion.CostosCaja}}</td>
+						  <td id="tdCaja"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Viajes al mes</td>
+						  <td style="text-align:right; " id="tdViajesMes">{{costeo.IDDepreciacion.ViajesMes}}</td>
+						  <td id="tdMes"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Kms al mes por unidad</td>
+						  <td style="text-align:right; " id="tdKmsMesXunidad">{{costeo.IDDepreciacion.KmsMesXunidad}}</td>
+						  <td id="tdKmMes"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>kmsMaximo</td>
+						  <td style="text-align:right; " id="tdkmsMaximo">{{costeo.IDDepreciacion.KmsMaximo}}</td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-striped table-bordered table-hover" id="" >
+					<thead>
+						<tr>
+						  <th scope="col">Factores y Premisas</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>{{costeo.IDFactoresPremisas.Unidad}} Trailer; {{costeo.IDFactoresPremisas.Caja}} Remolque </td>
+						  <td style="text-align:right; " id="tdKunidad">{{costeo.IDFactoresPremisas.Unidad}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Km</td>
+						  <td style="text-align:right" id="tdKmSencillo"  >{{costeo.IDFactoresPremisas.Km}}</td>
+						</tr>
+						<!--
+						<tr class="odd gradeX">
+						  <td>Km round trip</td>
+						  <td style="text-align:right" id="tdKmRoundTrip" >{{costeo.IDFactoresPremisas.KmRoundTrip}}</td>
+						</tr>
+					    -->
+						<tr class="odd gradeX">
+						  <td>Kms mensuales</td>
+						  <td style="text-align:right" id="tdKmMensuales" >{{costeo.IDFactoresPremisas.KmMensuales}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Casetas single</td>
+						  <td style="text-align:right" id="tdCasetaSingle" >{{costeo.IDFactoresPremisas.CasetaSingle}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td><u>Rendimiento</u></td>
+						  <td style="text-align:right;" id="tdRendimiento" >{{costeo.IDFactoresPremisas.Rendimiento}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Diesel</td>
+						  <td style="text-align:right" id="tdDiesel">{{costeo.IDFactoresPremisas.Diesel}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Diesel sin IVA</td>
+						  <td style="text-align:right" id="tdDieselSinIva">{{costeo.IDFactoresPremisas.DieselSinIva}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="col-lg-3 col-md-3">
+				<table class="table table-striped table-bordered table-hover" id="" style="width: 90%">
+					<thead>
+						<tr>
+						  <th scope="col">Facto/ KM Depreciación</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Dep Tracto </td>
+						  <td style="text-align:right" id="depTracto" ></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Dep Caja</td>
+						  <td style="text-align:right" id="depCaja" ></td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-striped table-bordered table-hover" id="" style="width: 70%">
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Renta GPS</td>
+						  <td style="text-align:right; " id="tdrentaGPS" >{{costeo.IDDepreciacion.RentaGPS}}</td>
+						  <td style="text-align:right" id="tdGPS"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Placas y tenencias</td>
+						  <td style="text-align:right; " id="tdplacasTenencia" >{{costeo.IDDepreciacion.PlacasTenencia}}</td>
+						  <td style="text-align:right" id="tdPlacas"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Seguro</td>
+						  <td style="text-align:right; " id="tdseguro" >{{costeo.IDDepreciacion.Seguro}}</td>
+						  <td style="text-align:right" id="tdSegurokm"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Admvo (%)</td>
+						  <td style="text-align:right; " id="tdAdmvo" >{{costeo.IDDepreciacion.Admvo}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Financieros (%)</td>
+						  <td style="text-align:right; " id="tdFinancieros" >{{costeo.IDDepreciacion.Financieros}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Mtto unidad por km</td>
+						  <td style="text-align:right; " id="tdMtto" >{{costeo.IDDepreciacion.MttoUnidadXkm}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Llantas</td>
+						  <td style="text-align:right;" id="tdLlantas" >{{costeo.IDDepreciacion.Llantas}}</td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Operador</td>
+						  <td style="text-align:right; " id="tdOperador" >{{costeo.IDDepreciacion.Operador}}</td>
+						</tr>
+						<!--
+						<tr class="odd gradeX">
+						  <td>Doble Operador</td>
+						  <td style="text-align:right; " id="tdDOperador" >{{costeo.IDDepreciacion.DobleOp}}</td>
+						</tr>
+					    -->
+					</tbody>
+				</table>
+			</div>
+			<div class="col-lg-4 col-md-4">
+				<table class="table table-striped table-bordered table-hover" id="" >
+					<thead>
+						<tr>
+						  <th scope="col">Costo Operativo Directo Variable</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Combustible </td>
+						  <td style="text-align:right" id="tdCombustible">{{costeo.IDCostosOperativos.Combustible}}</td>
+						  <td id="tdComb"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Casetas</td>
+						  <td style="text-align:right" id="tdCasetas">{{costeo.IDCostosOperativos.Casetas}}</td>
+						  <td id="tdCast"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Operador</td>
+						  <td style="text-align:right" id="tdOperadorOperativo">{{costeo.IDCostosOperativos.Operador}}</td>
+						  <td id="tdOper"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>SubTotal</td>
+						  <td style="text-align:right" id="tdSubtotal1">{{costeo.IDCostosOperativos.Subtotal1}}</td>
+						  <td id="tdsub1"></td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-striped table-bordered table-hover" id="" >
+					<thead>
+						<tr>
+						  <th scope="col">Costo Operativo indirecto fijo</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Mtto Unidad </td>
+						  <td style="text-align:right" id="tdMttoUnidad">{{costeo.IDCostosOperativos.MttoUnidad}}</td>
+						  <td id="tdMttoUnidadPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Llantas Unidad</td>
+						  <td style="text-align:right" id="tdLlantasUnidad">{{costeo.IDCostosOperativos.LlantasUnidad}}</td>
+						  <td id="tdLlantasUnidadPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>GPS</td>
+						  <td style="text-align:right" id="tdGPSCostos">{{costeo.IDCostosOperativos.Gps}}</td>
+						  <td id="tdGPSCostosPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Seguro</td>
+						  <td style="text-align:right" id="tdSeguroCostos">{{costeo.IDCostosOperativos.Seguro}}</td>
+						  <td id="tdSeguroCostosPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Placas y Tenencia</td>
+						  <td style="text-align:right" id="tdPlacasTenencia">{{costeo.IDCostosOperativos.PlacasTenencia}}</td>
+						  <td id="tdPlacasTenenciaPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>SubTotal</td>
+						  <td style="text-align:right" id="tdSubTotal2">{{costeo.IDCostosOperativos.SubTotal2}}</td>
+						  <td id="tdSubTotal2Por"></td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-striped table-bordered table-hover" id="">
+					<thead>
+						<tr>
+						  <th scope="col">Costos Admvo & Financiero</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Admvo</td>
+						  <td style="text-align:right" id="tdAdmvoCostos" >{{costeo.IDCostosOperativos.Admvo}}</td>
+						  <td id="tdAdmvoCostosPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Financieros</td>
+						  <td style="text-align:right" id="tdFinancierosCostos">{{costeo.IDCostosOperativos.Financieros}}</td>
+						  <td id="tdFinancierosCostosPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Depr. Unidad</td>
+						  <td style="text-align:right" id="tdDeprUnidad">{{costeo.IDCostosOperativos.DeprUnidad}}</td>
+						  <td id="tdDeprUnidadPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Depr. Remolque</td>
+						  <td style="text-align:right" id="tdDeprRemolque">{{costeo.IDCostosOperativos.DeprRemolque}}</td>
+						  <td id="tdDeprRemolquePor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>SubTotal</td>
+						  <td style="text-align:right" id="tdSubtotal3">{{costeo.IDCostosOperativos.Subtotal3}}</td>
+						  <td id="tdSubtotal3Por"></td>
+						</tr>
+					</tbody>
+				</table>
+				<h4 style="margin-top: 10px;">Total Costos</h4>
+				<h4 id="id_TotalCostosP"></h4>
+			</div>
+		</div>        
+    </div>
+</div>
+<script type="text/javascript">
+	if("{{ costeo.ViajeRedondo }}"=="True"){
+		document.getElementById('viajeRedondo').innerHTML ="Viaje Redondo";
+	}
+	else{
+		document.getElementById('viajeRedondo').innerHTML = "Viaje Sencillo";
+	}
+	
+	function ocultaPremisas() {
+	  var x = document.getElementById("PreimisasHide");
+	  if (x.style.display === "none") {
+	    x.style.display = "block";
+	 	filltables();
+	  } else {
+	    x.style.display = "none";
+	  }
+	}
+	
+	document.getElementById('kilometros').innerHTML = ""+ convertidorNumerico("{{ costeo.Kilometros }}") +"";//
+	if("{{ costeo.IDModelo.Modelo }}"==""){
+		document.getElementById('Modelo').innerHTML = "Modelo";
+	}
+	else{
+		document.getElementById('Modelo').innerHTML = "{{ costeo.IDModelo.Modelo }}";
+	}
+	document.getElementById('casetas').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.Casetas }}") +"";//
+	document.getElementById('totalCosto').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.TotalCostos }}") +"";//
+	document.getElementById('factorAjuste').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.FactorAjuste }}") +"";//
+	document.getElementById('id_TotalCostosP').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.TotalCostos }}") +"";//
+	document.getElementById('mop').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.Mop }}") +"";//
+
+	filltables();
+
+	function filltables()
+	{
+		document.getElementById('totalTransportista').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.TotalTransportista }}") +"";//
+		document.getElementById('tdCostoUnidad').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.IDDepreciacion.CostosUnidad }}") +"";//
+		document.getElementById('tdCostosCaja').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDDepreciacion.CostosCaja }}") +"";//
+		document.getElementById('tdKmsMesXunidad').innerHTML = ""+ convertidorNumerico(parseFloat("{{ costeo.IDDepreciacion.KmsMesXunidad }}")) +"";//
+		document.getElementById('tdkmsMaximo').innerHTML = ""+ convertidorNumerico(parseFloat("{{costeo.IDDepreciacion.KmsMaximo}}")) +"";//
+		document.getElementById('tdKmSencillo').innerHTML = ""+ convertidorNumerico(parseFloat("{{costeo.IDFactoresPremisas.Km}}")) +"";//
+
+		document.getElementById('tdCasetaSingle').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.IDFactoresPremisas.CasetaSingle }}") +"";//
+		document.getElementById('tdDiesel').innerHTML = ""+ convertidorDivisaMXN(parseFloat("{{ costeo.IDFactoresPremisas.Diesel }}")) +"";//
+		document.getElementById('tdDieselSinIva').innerHTML = ""+ convertidorDivisaMXN(parseFloat("{{ costeo.IDFactoresPremisas.DieselSinIva }}")) +"";//
+		document.getElementById('depTracto').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDDepreciacion.DepTracto}}") +"";//
+		document.getElementById('depCaja').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDDepreciacion.DepCaja}}") +"";//
+		document.getElementById('tdrentaGPS').innerHTML = ""+ convertidorDivisaMXN(parseFloat("{{costeo.IDDepreciacion.RentaGPS}}")) +"";//
+		document.getElementById('tdplacasTenencia').innerHTML = ""+ convertidorDivisaMXN(parseFloat("{{costeo.IDDepreciacion.PlacasTenencia}}")) +"";//
+		document.getElementById('tdseguro').innerHTML = ""+ convertidorDivisaMXN(parseFloat("{{costeo.IDDepreciacion.Seguro}}")) +"";//
+
+
+
+
+		document.getElementById('tdCombustible').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.IDCostosOperativos.Combustible }}") +"";//
+		document.getElementById('tdCasetas').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.IDCostosOperativos.Casetas }}") +"";//
+		document.getElementById('tdOperadorOperativo').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.IDCostosOperativos.Operador }}") +"";//
+		document.getElementById('tdSubtotal1').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.IDCostosOperativos.Subtotal1 }}") +"";//
+		document.getElementById('tdMttoUnidad').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.IDCostosOperativos.MttoUnidad }}") +"";//
+		document.getElementById('tdLlantasUnidad').innerHTML = ""+ convertidorDivisaMXN("{{ costeo.IDCostosOperativos.LlantasUnidad }}") +"";//
+		document.getElementById('tdGPSCostos').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.Gps}}") +"";//
+		document.getElementById('tdSeguroCostos').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.Seguro}}") +"";//
+		document.getElementById('tdPlacasTenencia').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.PlacasTenencia}}") +"";//
+		document.getElementById('tdSubTotal2').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.SubTotal2}}") +"";//
+		document.getElementById('tdAdmvoCostos').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.Admvo}}") +"";//
+		document.getElementById('tdFinancierosCostos').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.Financieros}}") +"";//
+		document.getElementById('tdDeprUnidad').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.DeprUnidad}}") +"";//
+		document.getElementById('tdDeprRemolque').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.DeprRemolque}}") +"";//
+		document.getElementById('tdSubtotal3').innerHTML = ""+ convertidorDivisaMXN("{{costeo.IDCostosOperativos.Subtotal3}}") +"";//
+
+
+
+		document.getElementById('tdUnidad').innerHTML = ""+ convertidorDivisaMXN(roundToTwo(parseFloat("{{costeo.IDDepreciacion.CostosUnidad}}")/parseFloat("{{costeo.IDDepreciacion.Meses}}"))) +"";//
+		document.getElementById('tdCaja').innerHTML = ""+ convertidorDivisaMXN(roundToTwo(parseFloat("{{costeo.IDDepreciacion.CostosCaja}}")/parseFloat("{{costeo.IDDepreciacion.Meses}}")))+"";//
+		document.getElementById('tdGPS').innerHTML = ""+ roundToTwo(parseFloat("{{costeo.IDDepreciacion.RentaGPS}}")/parseFloat("{{costeo.IDDepreciacion.KmsMaximo}}"))+"";//
+		document.getElementById('tdPlacas').innerHTML = ""+ roundToTwo((parseFloat("{{costeo.IDDepreciacion.PlacasTenencia}}")/parseFloat("{{costeo.IDDepreciacion.KmsMaximo}}")))+"";//
+		document.getElementById('tdSegurokm').innerHTML = ""+roundToTwo(parseFloat("{{costeo.IDDepreciacion.Seguro}}")/parseFloat("{{costeo.IDDepreciacion.KmsMaximo}}"))+"";//
+
+		if("{{costeo.TotalCostos}}"!="")
+		{
+			document.getElementById('tdComb').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.Combustible}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdCast').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.Casetas}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdOper').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.Operador}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdsub1').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.Subtotal1}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdMttoUnidadPor').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.MttoUnidad}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdLlantasUnidadPor').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.LlantasUnidad}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdGPSCostosPor').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.Gps}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdSeguroCostosPor').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.Seguro}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdPlacasTenenciaPor').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.PlacasTenencia}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdSubTotal2Por').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.SubTotal2}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdAdmvoCostosPor').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.Admvo}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdFinancierosCostosPor').innerHTML = Math.round((("{{costeo.IDCostosOperativos.Financieros}}")/("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdDeprUnidadPor').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.DeprUnidad}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdDeprRemolquePor').innerHTML =Math.round((parseFloat("{{costeo.IDCostosOperativos.DeprRemolque}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+			document.getElementById('tdSubtotal3Por').innerHTML = Math.round((parseFloat("{{costeo.IDCostosOperativos.Subtotal3}}")/parseFloat("{{costeo.TotalCostos}}"))*100)+'%';
+		}
+	}
+
+	function convertidorDivisaMXN(cadena){
+		if(cadena==""){
+			cadena = "$"+0;
+		}
+		else{
+			cadena = "$"+parseFloat(cadena).toLocaleString("en-US");
+			return cadena;
+		}
+	}
+
+	function convertidorNumerico(cadena){
+		cadena = parseFloat(cadena).toLocaleString("en-US");
+		return cadena;
+	}
+
+	function roundToTwo(num) {
+		var dec=2;
+		if ((typeof num !== 'number') || (typeof dec !== 'number'))
+		return false;
+
+		var num_sign = num >= 0 ? 1 : -1;
+
+		return (Math.round((num*Math.pow(10,dec))+(num_sign*0.0001))/Math.pow(10,dec)).toFixed(dec);
+	}
+</script>

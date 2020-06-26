@@ -1,0 +1,51 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css"/>
+    
+<div class="modal-header" style=" background-color: rgb(66, 108, 140);"></div>
+<div class="modal-body">
+    <div class="container" style="width: 100%; padding-left: 60px;">
+        <h2>Asignar Tipo de Unidad</h2>
+        <form method="post" action="{{asignarTipoUnidadG}}" id="asignarTipoUnidadG">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Tipos de Unidades</label>
+                        {{ form.Nombre }}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Asignar</button>
+            <button type="button" style="float:right;" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+        </form>
+    </div>
+</div>
+<script>
+    var banderaAsignar = 1;
+    $('#asignarTipoUnidadG').on('submit', function(event) {
+        var form = $(this);
+        tipoUnidad = document.getElementById("id_Nombre").value;
+
+        if(banderaAsignar==1){
+            if(tipoUnidad != 0){
+                banderaAsignar = 0;
+                $.ajax({
+                    url: form.attr("action"),
+                    data: form.serialize(),
+                    type: form.attr("method"),
+                    datatype: 'json',
+                    success: function(data){
+                        if(data.bandera == 2){
+                            tablaTransportistasG();
+                            $("#TransportistaModalG").modal("hide");
+                        }
+                    }
+                });
+            }
+            else{
+                alert("¡Seleccione un tipo de unidad valido!");
+            }
+        }
+        return false;
+    });
+</script>

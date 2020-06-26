@@ -1,0 +1,188 @@
+{% load static %}
+<div class="modal-header" style=" background-color: rgb(66, 108, 140);">
+</div>
+
+<div class="modal-body">
+    <div class="container" style="width: 100%; padding-left: 60px;">
+        <h2 id="TituloID">Actualizar Tipo Unidad</h2>
+        <form method="POST" action={{actualizarTipoUnidad}} id="actualizarTipoUnidad">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Nombre</label>
+                        {{ form.Nombre }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Volumen Max(M<sup>3</sup>)</label>
+                        {{ form.VolumenMax }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Peso Max(Tons)</label>
+                        {{ form.PesoMax }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Ancho(MTS)</label>
+                        {{ form.Ancho }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Largo(MTS)</label>
+                        {{ form.Largo }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Categoria Ejes</label>
+                        {{ form.IDCategoriaEje }}
+                    </div>
+                </div>
+            </div>
+            <button type="button"  class="btn btn-danger" onclick="borrarTipoUnidad();" >Borrar</button>
+            <button type="submit" style="float:right" class="btn btn-primary" id="id_Guardar">Actualizar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function sinEspacios(e){
+        return ((e.which != 32))
+    }
+
+    function mayusculas(e) {
+        e.value = e.value.toUpperCase();
+    }
+
+    function numerosDecimales(e, event) {
+        texto = document.getElementById(e.id).value;
+        simbolo = event.key;
+        cadena = texto+simbolo;
+
+        if(event.key == "Backspace" ||  event.key == "ArrowLeft" || event.key == "ArrowRight"){
+            return true;
+        }
+
+        var RE = /^([0-9]+\.?[0-9]{0,2})$/;
+        if (RE.test(cadena)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    var banderaAB = 1;
+    $('#actualizarTipoUnidad').on('submit', function(event) {
+        if(banderaAB == 0){
+            return false;
+        }
+        if(document.getElementById('id_Nombre').value==""){
+            alert('¡Falta el Nombre!');
+            return false;
+        }
+
+        if(document.getElementById('id_VolumenMax').value==""){
+            alert('¡Falta el volumen maximo!');
+            return false;
+        }
+
+        if(document.getElementById('id_PesoMax').value==""){
+            alert('¡Falta el peso maximo!');
+            return false;
+        }
+
+        if(document.getElementById('id_Ancho').value==""){
+            alert('¡Falta el ancho!');
+            return false;
+        }
+
+        if(document.getElementById('id_Largo').value==""){
+            alert('¡Falta el largo!');
+            return false;
+        }
+
+        if(document.getElementById('id_IDCategoriaEje').selectedIndex  == 0){
+            alert('¡Falta seleccionar una categoria valida!');
+            return false;
+        }
+
+        var form = $(this);
+        banderaAB = 0;
+        $.ajax({
+            url: form.attr("action"),
+            data: form.serialize(),
+            type: form.attr("method"),
+            datatype: 'json',
+            success: function(data){
+                if(data.bandera == 2){
+                    tablaTiposUnidades();
+                    $("#tiposUnidadesModal").modal("hide");
+                }
+                else if(data.bandera == 3){
+                    document.getElementById("id_Nombre").value = "";
+                    document.getElementById("id_VolumenMax").value = "";
+                    document.getElementById("id_PesoMax").value = "";
+                    document.getElementById("id_Ancho").value = "";
+                    document.getElementById("id_Largo").value = "";
+                    document.getElementById("id_IDCategoriaEje").selectedIndex = 0;
+                    alert('¡Existe una unidad con el mismo nombre y categoria de ejes!');
+                    banderaAB = 1;
+                    
+                }
+                else if(data.bandera == 4){
+                    document.getElementById("id_Nombre").value = "";
+                    document.getElementById("id_VolumenMax").value = "";
+                    document.getElementById("id_PesoMax").value = "";
+                    document.getElementById("id_Ancho").value = "";
+                    document.getElementById("id_Largo").value = "";
+                    document.getElementById("id_IDCategoriaEje").selectedIndex = 0;
+                    alert('¡El formulario no es valido!');
+                    banderaAB = 1;
+                }
+            }
+        });
+        return false;
+    });
+
+    function borrarTipoUnidad(){
+        var nombre = document.getElementById("id_Nombre").value;
+        var volumenMax = document.getElementById("id_VolumenMax").value;
+        var pesoMax = document.getElementById("id_PesoMax").value;
+        var ancho = document.getElementById("id_Ancho").value;
+        var largo = document.getElementById("id_Largo").value;
+        var categoriaEje = document.getElementById("id_IDCategoriaEje").value;
+
+        if(banderaAB == 1){
+            if(nombre!="" && volumenMax != "" && pesoMax != "" && ancho != "" && largo != "" && categoriaEje != 0){
+                banderaAB = 0;
+                $.ajax({
+                    url:  'borrarTipoUnidad/',
+                    type: 'POST',
+                    data:{'data': JSON.stringify({ "idTU" : "{{idTU}}"}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                    success: function (data) {
+                        if(data.bandera == 1){
+                            tablaTiposUnidades();
+                            $("#tiposUnidadesModal").modal("hide");
+                        }
+                        else if(data.bandera == 2){
+                            alert("¡El tipo de unidad tiene registros!");
+                            banderaAB = 1;
+                        }
+                    }
+                });
+
+            }
+            else{
+                alert("¡Faltan datos en el formulario!");
+            }
+        }
+    }
+</script>
+    

@@ -1,0 +1,8 @@
+<option value="0">Estatus</option>
+{% for e in estatus %}
+    {% if e.id == IDEstatus %}
+        <option value="{{e.id}}" selected>{{e.Nombre}}</option>
+    {% else %}
+        <option value="{{e.id}}" >{{e.Nombre}}</option>
+    {%endif%}
+{% endfor %}

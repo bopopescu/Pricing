@@ -1,0 +1,8 @@
+<option value="0">Tipos</option>
+{% for tipo in tipos %}
+    {% if tipo.id == IDTipo %}
+        <option value="{{tipo.id}}" selected>{{tipo.Nombre}}</option>
+    {% else %}
+        <option value="{{tipo.id}}" >{{tipo.Nombre}}</option>
+    {%endif%}
+{% endfor %}

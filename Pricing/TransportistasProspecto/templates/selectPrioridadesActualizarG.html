@@ -1,0 +1,8 @@
+<option value="0" >Prioridad</option>
+{% for prioridad in prioridades %}
+    {% if prioridad.id == IDPrioridad %}
+        <option value="{{prioridad.id}}" selected>{{prioridad.Nombre}}</option>
+    {% else %}
+        <option value="{{prioridad.id}}" >{{prioridad.Nombre}}</option>
+    {%endif%}
+{% endfor %}

@@ -1,0 +1,342 @@
+
+{% load static %}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css"/>
+    
+<div class="modal-header" style=" background-color: rgb(66, 108, 140);">
+</div>
+<div class="modal-body">
+    <div class="container" style="width: 100%; padding-left: 60px;">
+        <h2>Actualizar Ruta/Tarifa</h2>
+        <form method="post" action="{{actualizarTarifaG}}" id="actualizarTarifaG">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Rutas</label>
+                        {{ form.IDRuta }}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Tipos Unidades</label>
+                        {{ form.IDTipoUnidad }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>C.P. Origen</label>
+                        {{ form.CPOrigen }}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Estado Origen</label>
+                        {{ form.EstadoOrigen }}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Ciudad Origen</label>
+                        {{ form.CiudadOrigen }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>C.P. Destino</label>
+                        {{ form.CPDestino }}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Estado Destino</label>
+                        {{ form.EstadoDestino }}
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Ciudad Destino</label>
+                        {{ form.CiudadDestino }}
+                    </div>
+                </div>  
+            </div>
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                    <div class="form-group form-md-line-input form-md-floating-label">
+                        <label>Kilometros</label>
+                        <input type="text" name="Kilometros" class="form-control" placeholder="Kilometros" readonly id="id_KilometrosAux">
+                        {{ form.Kilometros }}
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                    <div class="form-group form-md-line-input form-md-floating-label">
+                        <label>Precio</label>
+                        {{ form.Precio }}
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                    <div class="form-group form-md-line-input form-md-floating-label">
+                        <br>
+                        <div class="pretty p-icon p-round p-pulse">
+                            {{ form.ViajeRedondo }}
+                            <div class="state p-success">
+                                <i class="icon mdi mdi-check"></i>
+                                <label>Viaje Redondo</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button"  class="btn btn-danger" onclick="borrarRuta();" >Borrar</button>
+            <button type="submit" style="float:right" class="btn btn-primary" id="id_Guardar">Actualizar</button>
+        </form>
+    </div>
+</div>
+<script>
+    document.getElementById("id_Kilometros").style.display = "none";
+    km = document.getElementById("id_Kilometros");
+    kmAux = document.getElementById("id_KilometrosAux");
+    kmAux.value = parseInt(Math.round(km.value)).toLocaleString("en-US");
+
+    function soloNumeros(e,event)
+    {
+        texto = document.getElementById(e.id).value;
+        simbolo = event.key;
+        cadena = texto+simbolo;
+
+        if(event.key == "Backspace" ||  event.key == "ArrowLeft" || event.key == "ArrowRight"){
+            return true;
+        }
+
+        var RE = /^[0-9]+$/;
+        if (RE.test(cadena)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    function numerosDecimales(e, event) {
+        texto = document.getElementById(e.id).value;
+        simbolo = event.key;
+        cadena = texto+simbolo;
+
+        if(event.key == "Backspace" ||  event.key == "ArrowLeft" || event.key == "ArrowRight"){
+            return true;
+        }
+
+        var RE = /^([0-9]+\.?[0-9]{0,2})$/;
+        if (RE.test(cadena)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    function buscarRutaActualizarG(e){
+        document.getElementById("id_IDTipoUnidad").selectedIndex = 0;
+        document.getElementById("id_Precio").value = "";
+        document.getElementById("id_ViajeRedondo").checked = false;
+        buscarDatosRutaActualizarG(e.value);
+    }
+
+    var banderaAB = 1;
+    $('#actualizarTarifaG').on('submit', function(event) {
+        var tipoUnidad = document.getElementById("id_IDTipoUnidad").selectedIndex;
+        var ruta = document.getElementById("id_IDRuta").value;
+        var cpOrigen = document.getElementById("id_CPOrigen").value;
+        var estadoOrigen = document.getElementById("id_EstadoOrigen").value;
+        var ciudadOrigen = document.getElementById("id_CiudadOrigen").value;
+        var cpDestino = document.getElementById("id_CPDestino").value;
+        var estadoDestino = document.getElementById("id_EstadoDestino").value;
+        var ciudadDestino = document.getElementById("id_CiudadDestino").value;
+        var kilometros = document.getElementById("id_Kilometros").value;
+        var precio = document.getElementById("id_Precio").value;
+
+        if(banderaAB == 0){
+            return false;
+        }
+
+        if(tipoUnidad == 0){
+            alert("¡Seleccione un tipo de unidad!");
+            return false;
+        }
+
+        if(ruta == "Ruta"){
+            alert("¡Falta seleccionar una ruta valida!");
+            return false;
+        }
+
+        if(cpOrigen == ""){
+            alert("¡Falta el codigo postal origen!");
+            return false;
+        }
+
+        if(estadoOrigen == "Estado"){
+            alert("¡Seleccione un estado origen!");
+            return false;
+        }
+
+        if(ciudadOrigen == "Ciudad"){
+            alert("¡Seleccione una ciudad origen!");
+            return false;
+        }
+
+        if(cpDestino == ""){
+            alert("¡Falta el codigo postal destino!");
+            return false;
+        }
+
+        if(estadoDestino == "Estado"){
+            alert("¡Falta el estado destino!");
+            return false;
+        }
+
+        if(ciudadDestino == "Ciudad"){
+            alert("¡Faltan la ciudad destino!");
+            return false;
+        }
+
+        if(precio == ""){
+            alert("¡Falta el precio!");
+            return false;
+        }
+
+        if(kilometros == ""){
+            alert("¡Faltan los kilometros!");
+            return false;
+        }
+
+        var form = $(this);
+        banderaAB = 0;
+        $.ajax({
+            url: form.attr("action"),
+            data: form.serialize(),
+            type: form.attr("method"),
+            datatype: 'json',
+            success: function(data){
+                if(data.bandera == 2){
+                    document.getElementById('id_IDTipoUnidad').selectedIndex = 0;
+                    document.getElementById("id_IDRuta").selectedIndex = 0;
+                    document.getElementById("id_CPOrigen").value = "";
+                    document.getElementById("id_EstadoOrigen").value = "";
+                    document.getElementById('id_CiudadOrigen').value = "";
+                    document.getElementById("id_CPDestino").value = "";
+                    document.getElementById("id_EstadoDestino").value = "";
+                    document.getElementById('id_CiudadDestino').value = "";
+                    document.getElementById("id_Kilometros").value = "";
+                    document.getElementById("id_Precio").value = "";
+                    document.getElementById("id_ViajeRedondo").checked = false;
+                    alert("¡La ruta ya existe en el transportista!");
+                    banderaAB = 1; 
+                }
+                else if(data.bandera == 3){
+                    tablaTransportistasG();
+                    $("#TransportistaModalG").modal("hide");
+                }
+                else if(data.bandera == 4){
+                    document.getElementById('id_IDTipoUnidad').selectedIndex = 0;
+                    document.getElementById("id_IDRuta").selectedIndex = 0;
+                    document.getElementById("id_CPOrigen").value = "";
+                    document.getElementById("id_EstadoOrigen").value = "";
+                    document.getElementById('id_CiudadOrigen').value = "";
+                    document.getElementById("id_CPDestino").value = "";
+                    document.getElementById("id_EstadoDestino").value = "";
+                    document.getElementById('id_CiudadDestino').value = "";
+                    document.getElementById("id_Kilometros").value = "";
+                    document.getElementById("id_Precio").value = "";
+                    document.getElementById("id_ViajeRedondo").checked = false;
+                    alert("¡Validacion erronea en el formulario!");
+                    banderaAB = 1;
+                }
+            }
+        });
+        return false;
+    });
+
+    function borrarRuta(){
+        var tipoUnidad = document.getElementById("id_IDTipoUnidad").selectedIndex;
+        var ruta = document.getElementById("id_IDRuta").value;
+        var cpOrigen = document.getElementById("id_CPOrigen").value;
+        var estadoOrigen = document.getElementById("id_EstadoOrigen").value;
+        var ciudadOrigen = document.getElementById("id_CiudadOrigen").value;
+        var cpDestino = document.getElementById("id_CPDestino").value;
+        var estadoDestino = document.getElementById("id_EstadoDestino").value;
+        var ciudadDestino = document.getElementById("id_CiudadDestino").value;
+        var kilometros = document.getElementById("id_Kilometros").value;
+        var precio = document.getElementById("id_Precio").value;
+        var bandera = 1;
+
+        if(tipoUnidad == 0){
+            alert("¡Seleccione un tipo de unidad!");
+            bandera = 0;
+        }
+
+        if(ruta == "Ruta"){
+            alert("¡Falta seleccionar una ruta valida!");
+            bandera = 0;
+        }
+
+        if(cpOrigen == ""){
+            alert("¡Falta el codigo postal origen!");
+            bandera = 0;
+        }
+
+        if(estadoOrigen == "Estado"){
+            alert("¡Seleccione un estado origen!");
+            bandera = 0;
+        }
+
+        if(ciudadOrigen == "Ciudad"){
+            alert("¡Seleccione una ciudad origen!");
+            bandera = 0;
+        }
+
+        if(cpDestino == ""){
+            alert("¡Falta el codigo postal destino!");
+            bandera = 0;
+        }
+
+        if(estadoDestino == "Estado"){
+            alert("¡Falta el estado destino!");
+            bandera = 0;
+        }
+
+        if(ciudadDestino == "Ciudad"){
+            alert("¡Faltan la ciudad destino!");
+            bandera = 0;
+        }
+
+        if(precio == ""){
+            alert("¡Falta el precio!");
+            bandera = 0;
+        }
+
+        if(kilometros == ""){
+            alert("¡Faltan los kilometros!");
+            bandera = 0;
+        }
+
+        if(banderaAB == 1){
+            if(bandera == 1){
+                banderaAB = 0;
+                $.ajax({
+                    url:  'borrarTarifaG/',
+                    type: 'POST',
+                    dataType: 'json',
+                    ContentType: 'application/json; charset=utf-8',
+                    data: {'data': JSON.stringify({'idT':'{{idT}}', 'idTa': '{{idTa}}'}), "csrfmiddlewaretoken" : "{{csrf_token}}"},
+                    success: function (data) {
+                        tablaTransportistasG();
+                        $("#TransportistaModalG").modal("hide");
+                    }
+                });
+            }
+        }
+    }
+</script>

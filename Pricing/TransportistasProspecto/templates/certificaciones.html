@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block style_block %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/Transportista/registra.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/Transportista/scroll.css' %}">
+{% endblock %}
+{% block body_block %}
+<div class="portlet light portlet-fit portlet-datatable bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-red sbold uppercase"> <i class="fas fa-truck-moving font-red"></i>Certificaciones</span>
+        </div>
+        <div class="actions">
+            <button type="button" class="btn btn-info" onclick="crearCertificacion()">Crear</button>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div id="tablaCertificaciones">          
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CertificacionesModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script_block %}
+    {% load static %}
+    <script>
+        window.onload = function() {
+            tablaCertificaciones();
+        }
+
+        function tablaCertificaciones(){
+            $("#tablaCertificaciones").empty();
+            $.ajax({
+                url:  "tablaCertificaciones/",
+                type: 'POST',
+                data: {'data': '',"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                success: function (data) {
+                    $("#tablaCertificaciones").html(data.tablaCertificaciones);
+                }
+            });
+        }
+
+        function crearCertificacion() {
+            $("#CertificacionesModal .modal-content").empty();
+            $.ajax({
+                url: "crearCertificacion/",
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function () {
+                $("#CertificacionesModal").modal("show");
+                },
+                success: function (data) {
+                    $("#CertificacionesModal .modal-content").empty();
+                    $("#CertificacionesModal .modal-content").html(data.crearCertificacion);
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,551 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css"/>
+    
+<div class="modal-header" style=" background-color: rgb(66, 108, 140);">
+</div>
+<div class="modal-body">
+    <div class="container" style="width: 100%; padding-left: 60px;">
+        <h2>Crear Ruta</h2>
+        <form method="post" action="{{crearRutaT}}" id="crearRutaT">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Nombre Rutas</label>
+                        {{ form.NombreRuta }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>C.P. Origen</label>
+                        {{ form.CPOrigen }}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Estado Origen</label>
+                        {{ form.EstadoOrigen }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Ciudad Origen</label>
+                        {{ form.CiudadOrigen }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>C.P. Destino</label>
+                        {{ form.CPDestino }}
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Estado Destino</label>
+                        {{ form.EstadoDestino }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Ciudad Destino</label>
+                        {{ form.CiudadDestino }}
+                    </div>
+                </div>  
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label">
+                        <label>kilometros</label>
+                        <input type="text" name="Kilometros" class="form-control" placeholder="Kilometros" readonly onkeydown="return soloNumeros(this, event);" id="id_KilometrosAux">
+                        {{ form.Kilometros }}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Crear</button>
+            <button type="button" class="btn btn-default" style="float: right;" data-dismiss="modal" >Cerrar</button>
+        </form>
+    </div>
+</div>
+<script>
+    var codO = "";
+    var codD = "";
+    var NombreCO = "";
+    var NombreCD = "";
+    var servidor = "http://gaia.inegi.org.mx/sakbe_v3.1/";
+    document.getElementById("id_Kilometros").style.display = "none";
+
+    function soloNumeros(e){
+        texto = document.getElementById(e.id).value;
+        simbolo = event.key;
+        cadena = texto+simbolo;
+
+        if(event.key == "Backspace" ||  event.key == "ArrowLeft" || event.key == "ArrowRight"){
+            return true;
+        }
+
+        var RE =  /^([0-9])*$/;
+        if (RE.test(cadena)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    $.ajax({
+        type: 'GET',
+        url: "https://api-sepomex.hckdrk.mx/query/get_estados",
+        success: function (data) {
+            var estadosOrigen=document.getElementById('id_EstadoOrigen');
+            $.each(data.response.estado, function (i, value) {
+                $(estadosOrigen).append($('<option>').text(value).attr('value',value));
+            });
+            document.getElementById("id_CPOrigen").value = "";
+            document.getElementById("id_EstadoOrigen").selectedIndex = 0;
+            document.getElementById("id_CiudadOrigen").selectedIndex = 0;
+        },
+    });
+
+    $.ajax({
+        type: 'GET',
+        url: "https://api-sepomex.hckdrk.mx/query/get_estados",
+        success: function (data) {
+            var estadosDestino=document.getElementById('id_EstadoDestino');
+            $.each(data.response.estado, function (i, value) {
+                $(estadosDestino).append($('<option>').text(value).attr('value',value));
+            });
+            document.getElementById("id_CPDestino").value = "";
+            document.getElementById("id_EstadoDestino").selectedIndex = 0;
+            document.getElementById("id_CiudadDestino").selectedIndex = 0;
+        },
+    });
+
+    function buscarEstadoMunicipio(e) {
+        var cadena = e.value;
+        var estadosOrigen = document.getElementById("id_EstadoOrigen");
+        var ciudadesOrigen = document.getElementById("id_CiudadOrigen");
+        var estadoOrigen = "";
+        var ciudadOrigen = "";
+        var url = "";
+        document.getElementById("id_NombreRuta").value = "";
+        NombreCO = "";
+        document.getElementById("id_Kilometros").value = "";
+        document.getElementById("id_KilometrosAux").value = "";
+        codO = "";
+
+        if(cadena.length==5){
+            estadosOrigen.selectedIndex = 0;
+            ciudadesOrigen.selectedIndex = 0;
+
+            url = 'https://api-sepomex.hckdrk.mx/query/info_cp/' + e.value;
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (data) {
+                    for(var cont = 0; cont < estadosOrigen.length ;cont++){
+                        if(estadosOrigen.options[cont].value == data[0].response.estado){
+                            estadoOrigen =  data[0].response.estado;
+                            ciudadOrigen = data[0].response.municipio;
+                            estadosOrigen.selectedIndex = cont;
+
+                            $.ajax({
+                                type: 'GET',
+                                url: "https://api-sepomex.hckdrk.mx/query/get_municipio_por_estado/"+ estadoOrigen,
+                                success: function (data) {
+                                    $(ciudadesOrigen).empty();
+                                    $(ciudadesOrigen).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+                                    $.each(data.response.municipios, function (i, value) {
+                                        $(ciudadesOrigen).append($('<option>').text(value).attr('value',value));
+                                        if(value == ciudadOrigen){
+                                            ciudadesOrigen.selectedIndex = i+1;
+                                        }
+                                    });
+
+                                    NombreCO = ciudadOrigen;
+                                    document.getElementById("id_NombreRuta").value = NombreCO+NombreCD;
+
+                                    $.ajax({
+                                        url:  'IdCdRuta/',
+                                        type: 'POST',
+                                        dataType: 'json',
+                                        ContentType: 'application/json; charset=utf-8',
+                                        data: {'data': JSON.stringify({ 'ciudad' : ciudadOrigen, 'estado' : estadoOrigen}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                                        success: function (data) {
+                                            if(data.bandera==2){                      
+                                                codO = data.cod;
+                                                kilometros();
+                                            }
+                                        }
+                                    });
+                                },
+                            });
+                            break;
+                        }
+                    }
+                },
+            });
+        }
+        else{
+            estadosOrigen.selectedIndex = 0;
+            ciudadesOrigen.selectedIndex = 0;
+            $(ciudadesOrigen).empty();
+            $(ciudadesOrigen).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+            ciudadesOrigen.selectedIndex = 0;
+        }
+    }
+
+    function buscarEstadoMunicipioD(e) {
+        var cadena = e.value;
+        var estadosDestino = document.getElementById("id_EstadoDestino");
+        var ciudadesDestino = document.getElementById("id_CiudadDestino");
+        var estadoDestino = "";
+        var ciudadDestino = "";
+        var url = "";
+        document.getElementById("id_NombreRuta").value = "";
+        NombreCD = "";
+        document.getElementById("id_Kilometros").value = "";
+        document.getElementById("id_KilometrosAux").value = "";
+        codD = "";
+
+        if(cadena.length==5){
+            estadosDestino.selectedIndex = 0;
+            ciudadesDestino.selectedIndex = 0;
+
+            url = 'https://api-sepomex.hckdrk.mx/query/info_cp/' + e.value;
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (data) {
+                    for(var cont = 0; cont < estadosDestino.length ;cont++){
+                        if(estadosDestino.options[cont].value == data[0].response.estado){
+                            estadoDestino =  data[0].response.estado;
+                            ciudadDestino = data[0].response.municipio;
+                            estadosDestino.selectedIndex = cont;
+
+                            $.ajax({
+                                type: 'GET',
+                                url: "https://api-sepomex.hckdrk.mx/query/get_municipio_por_estado/"+ estadoDestino,
+                                success: function (data) {
+                                    $(ciudadesDestino).empty();
+                                    $(ciudadesDestino).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+                                    $.each(data.response.municipios, function (i, value) {
+                                        $(ciudadesDestino).append($('<option>').text(value).attr('value',value));
+                                        if(value == ciudadDestino){
+                                            ciudadesDestino.selectedIndex = i+1;
+                                        }
+                                    });
+
+                                    NombreCD = "-"+ciudadDestino;
+                                    document.getElementById("id_NombreRuta").value = NombreCO+NombreCD;
+
+                                    $.ajax({
+                                        url:  'IdCdRuta/',
+                                        type: 'POST',
+                                        dataType: 'json',
+                                        ContentType: 'application/json; charset=utf-8',
+                                        data: {'data': JSON.stringify({ 'ciudad' : ciudadDestino, 'estado' : estadoDestino}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                                        success: function (data) {
+                                            if(data.bandera==2){                   
+                                                codD = data.cod;
+                                                kilometros();
+                                            }
+                                        }
+                                    });
+                                },
+                            });
+                            break;
+                        }
+                    }
+                },
+            });
+        }
+        else{
+            estadosDestino.selectedIndex = 0;
+            ciudadesDestino.selectedIndex = 0;
+            $(ciudadesDestino).empty();
+            $(ciudadesDestino).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+            ciudadesDestino.selectedIndex = 0;
+        }
+    }
+
+    $('#id_EstadoOrigen').on('change',function () {
+        ciudadesOrigen=document.getElementById('id_CiudadOrigen');
+        $(ciudadesOrigen).empty();
+        $(ciudadesOrigen).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+        ciudadesOrigen.selectedIndex = 0;
+        document.getElementById("id_CPOrigen").value = "";
+        document.getElementById("id_Kilometros").value = "";
+        document.getElementById("id_NombreRuta").value = "";
+        NombreCO = "";
+        document.getElementById("id_NombreRuta").value = NombreCO+NombreCD;
+
+        $.ajax({
+            type: 'GET',
+            url: "https://api-sepomex.hckdrk.mx/query/get_municipio_por_estado/"+ $(this).val(),
+            success: function (data) {
+                $.each(data.response.municipios, function (i, value) {
+                    $(ciudadesOrigen).append($('<option>').text(value).attr('value',value));
+                });
+            },
+        });
+    });
+
+    $('#id_EstadoDestino').on('change',function () {
+        ciudadesDestino=document.getElementById('id_CiudadDestino');
+        $(ciudadesDestino).empty();
+        $(ciudadesDestino).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+        ciudadesDestino.selectedIndex = 0;
+        document.getElementById("id_CPDestino").value = "";
+        document.getElementById("id_Kilometros").value = "";
+        document.getElementById("id_NombreRuta").value = "";
+        NombreCD = "";
+        document.getElementById("id_NombreRuta").value = NombreCO+NombreCD;
+
+        $.ajax({
+            type: 'GET',
+            url: "https://api-sepomex.hckdrk.mx/query/get_municipio_por_estado/"+ $(this).val(),
+            success: function (data) {
+                $.each(data.response.municipios, function (i, value) {
+                    $(ciudadesDestino).append($('<option>').text(value).attr('value',value));
+                });
+            },
+        });
+    });
+
+    $('#id_CiudadOrigen').on('change',function () {
+        var estadoOrigen=document.getElementById('id_EstadoOrigen').value;
+        var ciudadOrigen=$(this).val();
+        var CPEstadoOrigen = "";
+        document.getElementById('id_CPOrigen').value = "";
+        document.getElementById("id_NombreRuta").value = "";
+        NombreCO = "";
+        document.getElementById("id_Kilometros").value = "";
+        document.getElementById("id_KilometrosAux").value = "";
+        codO = "";
+    
+        $.ajax({
+            type: 'GET',
+            url: "https://api-sepomex.hckdrk.mx/query/get_cp_por_estado/"+ estadoOrigen,
+            success: function (data) {
+                CPEstadoOrigen = data.response.cp[0];
+                $.ajax({
+                    type: 'GET',
+                    url: "https://api-sepomex.hckdrk.mx/query/get_cp_por_municipio/"+ ciudadOrigen,
+                    success: function (data) {
+                        $.each(data.response.cp, function (i, value) {
+                            if(parseInt(CPEstadoOrigen)<=parseInt(value)){
+                                $(document.getElementById('id_CPOrigen')).val(value);
+                                return false;
+                            }
+                        });
+
+                        NombreCO = ciudadOrigen;
+                        document.getElementById("id_NombreRuta").value = NombreCO+NombreCD;
+
+                        $.ajax({
+                            url:  'IdCdRuta/',
+                            type: 'POST',
+                            dataType: 'json',
+                            ContentType: 'application/json; charset=utf-8',
+                            data: {'data': JSON.stringify({ 'ciudad' : ciudadOrigen, 'estado' : estadoOrigen}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                            success: function (data) {
+                                if(data.bandera==2){                      
+                                    codO = data.cod;
+                                    kilometros();
+                                }
+                            }
+                        }); 
+                    },                
+                });
+            },
+        });
+    });
+
+    $('#id_CiudadDestino').on('change',function () {
+        var estadoDestino=document.getElementById('id_EstadoDestino').value;
+        var ciudadDestino=$(this).val();
+        var CPEstadoDestino = "";
+        document.getElementById('id_CPDestino').value = "";
+        document.getElementById("id_NombreRuta").value = "";
+        NombreCD = "";
+        document.getElementById("id_Kilometros").value = "";
+        document.getElementById("id_KilometrosAux").value = "";
+        codD = "";
+
+        $.ajax({
+            type: 'GET',
+            url: "https://api-sepomex.hckdrk.mx/query/get_cp_por_estado/"+ estadoDestino,
+            success: function (data) {
+                CPEstadoDestino = data.response.cp[0];
+                $.ajax({
+                    type: 'GET',
+                    url: "https://api-sepomex.hckdrk.mx/query/get_cp_por_municipio/"+ ciudadDestino,
+                    success: function (data) {
+                        $.each(data.response.cp, function (i, value) {
+                            if(parseInt(CPEstadoDestino)<=parseInt(value)){
+                                $(document.getElementById('id_CPDestino')).val(value);
+                                return false;
+                            }
+                        });
+
+                        NombreCD = "-"+ciudadDestino;
+                        document.getElementById("id_NombreRuta").value = NombreCO+NombreCD;
+
+                        $.ajax({
+                            url:  'IdCdRuta/',
+                            type: 'POST',
+                            dataType: 'json',
+                            ContentType: 'application/json; charset=utf-8',
+                            data: {'data': JSON.stringify({ 'ciudad' : ciudadDestino, 'estado' : estadoDestino}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                            success: function (data) {
+                                if(data.bandera==2){                      
+                                    codD = data.cod;
+                                    kilometros();
+                                }
+                            }
+                        });
+                    },                
+                });
+            },
+        });
+    });
+
+    function kilometros(){     
+		document.getElementById("id_Kilometros").value = "";
+        document.getElementById("id_KilometrosAux").value = "";
+
+        if(codO!="" && codD !=""){
+            $.post(servidor+"cuota",
+                {
+                dest_i: codO,
+                dest_f: codD,
+                v: 7,
+                type:"json",
+                proj:"MERC",
+                key: "x4cGBaOC-423Z-A9ii-AKwM-QWiCfq63rMu9"
+                },
+                function( json ){
+                    document.getElementById("id_Kilometros").value = Math.round(json.data.long_km);
+                    document.getElementById('id_KilometrosAux').value = parseInt( Math.round(json.data.long_km)).toLocaleString("en-US");            
+            });
+        }
+    }
+
+    var banderaCrear = 1;
+    $('#crearRutaT').on('submit', function(event) {
+        var nombreRuta = document.getElementById("id_NombreRuta").value;
+        var cpOrigen = document.getElementById("id_CPOrigen").value;
+        var estadoOrigen = document.getElementById("id_EstadoOrigen").value;
+        var ciudadOrigen = document.getElementById("id_CiudadOrigen").value;
+        var cpDestino = document.getElementById("id_CPDestino").value;
+        var estadoDestino = document.getElementById("id_EstadoDestino").value;
+        var ciudadDestino = document.getElementById("id_CiudadDestino").value;
+        var kilometros = document.getElementById("id_Kilometros").value;
+
+        if(banderaCrear==0){
+            return false;
+        }
+
+        if(nombreRuta == ""){
+            alert("¡Falta el nombre de la ruta!");
+            return false;
+        }
+
+        if(cpOrigen == ""){
+            alert("¡Falta el codigo postal origen!");
+            return false;
+        }
+
+        if(estadoOrigen == "Estado"){
+            alert("¡Seleccione un estado origen!");
+            return false;
+        }
+
+        if(ciudadOrigen == "Ciudad"){
+            alert("¡Seleccione una ciudad origen!");
+            return false;
+        }
+
+        if(cpDestino == ""){
+            alert("¡Falta el codigo postal destino!");
+            return false;
+        }
+
+        if(estadoDestino == "Estado"){
+            alert("¡Falta el estado destino!");
+            return false;
+        }
+
+        if(ciudadDestino == "Ciudad"){
+            alert("¡Faltan la ciudad destino!");
+            return false;
+        }
+
+        if(kilometros == ""){
+            alert("¡Faltan los kilometros!");
+            return false;
+        }
+
+        var form = $(this);
+        banderaCrear = 0;
+        $.ajax({
+            url: form.attr("action"),
+            data: form.serialize(),
+            type: form.attr("method"),
+            datatype: 'json',
+            success: function(data){
+                if(data.bandera == 2){
+                    tablaRutasT();
+                    $("#RutasModal").modal("hide");
+                }
+                else if(data.bandera == 3){
+                    document.getElementById("id_NombreRuta").value = "";
+                    NombreCO = "";
+                    NombreCD = "";
+                    document.getElementById("id_CPOrigen").value = "";
+                    document.getElementById("id_EstadoOrigen").selectedIndex = 0;
+                    ciudadOrigen=document.getElementById('id_CiudadOrigen');
+                    $(ciudadOrigen).empty();
+                    $(ciudadOrigen).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+                    ciudadOrigen.selectedIndex = 0;
+                    document.getElementById("id_CPDestino").value = "";
+                    document.getElementById("id_EstadoDestino").selectedIndex = 0;
+                    ciudadDestino=document.getElementById('id_CiudadDestino');
+                    $(ciudadDestino).empty();
+                    $(ciudadDestino).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+                    ciudadDestino.selectedIndex = 0;
+                    document.getElementById("id_Kilometros").value = "";
+                    document.getElementById("id_KilometrosAux").value = "";
+                    alert("¡La ruta ya existe!");
+                    banderaCrear = 1;
+                }
+                else if(data.bandera == 4){
+                    document.getElementById("id_NombreRuta").value = "";
+                    NombreCO = "";
+                    NombreCD = "";
+                    document.getElementById("id_CPOrigen").value = "";
+                    document.getElementById("id_EstadoOrigen").selectedIndex = 0;
+                    ciudadOrigen=document.getElementById('id_CiudadOrigen');
+                    $(ciudadOrigen).empty();
+                    $(ciudadOrigen).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+                    ciudadOrigen.selectedIndex = 0;
+                    document.getElementById("id_CPDestino").value = "";
+                    document.getElementById("id_EstadoDestino").selectedIndex = 0;
+                    ciudadDestino=document.getElementById('id_CiudadDestino');
+                    $(ciudadDestino).empty();
+                    $(ciudadDestino).append($('<option>').text('Ciudad').attr('value',"Ciudad"));
+                    ciudadDestino.selectedIndex = 0;
+                    document.getElementById("id_Kilometros").value = "";
+                    document.getElementById("id_KilometrosAux").value = "";
+                    alert("¡Validacion erronea en el formulario!");
+                    banderaCrear = 1;
+                }
+            }
+        });
+        return false;
+    });
+</script>

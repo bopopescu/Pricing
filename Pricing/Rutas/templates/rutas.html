@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block style_block %}
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/Transportista/registra.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/Transportista/scroll.css' %}">
+{% endblock %}
+{% block body_block %}
+<div class="portlet light portlet-fit portlet-datatable bordered">
+    <div class="portlet-title">
+        <div class="caption">
+            <span class="caption-subject font-red sbold uppercase"> <i class="fas fa-truck-moving font-red"></i>Rutas</span>
+        </div>
+        <div class="actions">
+            <button type="button" class="btn btn-info" onclick="crearRuta()">Crear</button>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div id="tablaRutas">          
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="RutasModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+    
+{% endblock %}
+{% block script_block %}
+    {% load static %}
+    <script>
+        ajxaSelectTiposUnidadesTransportista = null;
+        window.onload = function() {
+            tablaRutas();
+        }
+
+        function tablaRutas(){
+            $("#tablaRutas").empty("");
+            $.ajax({
+                url:  "tablaRutas/",
+                type: 'POST',
+                data: {'data': '',"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                success: function (data) {
+                    $("#tablaRutas").empty("");
+                    $("#tablaRutas").html(data.tablaRutas);
+                }
+            });
+        }
+
+        function crearRuta() {
+            $("#RutasModal .modal-content").empty("");
+            $.ajax({
+                url: "crearRuta/",
+                type: 'get',
+                dataType: 'json',
+                beforeSend: function () {
+                $("#RutasModal").modal("show");
+                },
+                success: function (data) {
+                    $("#RutasModal .modal-content").empty("");
+                    $("#RutasModal .modal-content").html(data.crearRuta);
+                    
+                    $.ajax({
+                        url:  'selectTransportistasRutas/',
+                        type: 'POST',
+                        dataType: 'json',
+                        ContentType: 'application/json; charset=utf-8',
+                        data: {'data':{},"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                        success: function (data) {
+                            $("#id_IDTransportista").html(data.selectTransportistasRutas);
+                        }
+                    });
+                }
+            });
+        }
+
+        function selectTiposUnidadesTransportista(e){
+            var idT = document.getElementById(e.id).value;
+            $(id_IDTipoUnidad).empty();
+            $(id_IDTipoUnidad).append($('<option>').text('Tipo Unidad').attr('value',"Tipo Unidad"));
+
+            if(ajxaSelectTiposUnidadesTransportista == null){
+                if(idT != 0){
+                    ajxaSelectTiposUnidadesTransportista = $.ajax({
+                        url:  'selectTiposUnidadesTransportista/',
+                        type: 'POST',
+                        dataType: 'json',
+                        ContentType: 'application/json; charset=utf-8',
+                        data: {'data': JSON.stringify({ 'idT' : idT}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                        success: function (data) {
+                            ajxaSelectTiposUnidadesTransportista = null;
+                            $(id_IDTipoUnidad).empty();
+                            $(id_IDTipoUnidad).append($('<option>').text('Tipo Unidad').attr('value',"Tipo Unidad"));
+                            $("#id_IDTipoUnidad").html(data.selectTiposUnidadesTransportista);
+                        }
+                    });
+                }
+            }
+            else{
+                ajxaSelectTiposUnidadesTransportista.abort();
+            }
+        }
+
+        function selectTipoUnidadActualizar(idT, idTU){
+            $(id_IDTipoUnidad).empty();
+            $(id_IDTipoUnidad).append($('<option>').text('Tipo Unidad').attr('value',"Tipo Unidad"));
+
+            $.ajax({
+                url:  'selectTipoUnidadActualizar/',
+                type: 'POST',
+                dataType: 'json',
+                ContentType: 'application/json; charset=utf-8',
+                data: {'data': JSON.stringify({ 'idT' : idT, 'idTU' : idTU}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                success: function (data) {
+                    ajaxSelectTipoUnidadActualizar = null;
+                    $(id_IDTipoUnidad).empty();
+                    $(id_IDTipoUnidad).append($('<option>').text('Tipo Unidad').attr('value',"Tipo Unidad"));
+                    $("#id_IDTipoUnidad").html(data.selectTipoUnidadActualizar);
+                }
+            });
+        }
+    </script>
+{% endblock %}
