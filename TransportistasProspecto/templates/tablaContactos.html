@@ -1,0 +1,100 @@
+{% load static %}
+<link href="{% static 'assets/global/plugins/datatables/datatables.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css' %}" rel="stylesheet" type="text/css" />
+
+<table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_5">
+    <thead>
+        <tr>
+            <th> Id </th>
+            <th> Razon Social</th>
+            <th> Nombre Comercial</th>
+            <th> Profesion </th>
+            <th> Nombre </th>
+            <th> Puesto </th>
+            <th> Telefono </th>
+            <th> Correo </th>
+            <th> CorreoAdicional </th>
+            <th> Estatus </th>
+            <th> Prioridad </th>
+            <th> Tipo </th>
+            <th> PaginaWeb </th>
+            <th> RFC </th>
+            <th> Seguridad </th>
+            <th> Pais </th>
+            <th> Estado </th>
+            <th> Municipio </th>
+            <th> Calle </th>
+            <th> NumInt </th>
+            <th> NumExt </th>
+            <th> Colonia </th>
+            <th> Codigo Postal </th>
+            <th> Credito </th>
+            <th> PolizaSeguro </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for contacto in contactos %}
+            {% for transportista in contacto.ContactosXTransportistas.all %}
+                {% if transportista.Actividad == 1 %}
+                    <tr class="odd gradeX">
+                        <td>{{transportista.id}}</td>
+                        <td>{{transportista.RazonSocial}}</td>
+                        <td>{{transportista.NombreComercial}}</td>
+                        <td>{{contacto.Profesion}}</td>
+                        <td>
+                            <ul style="list-style:none; margin: 0px; padding: 0px;">
+                                <li style="position: static;"><a href="#" style="color: blue;" id ="TC-{{contacto.id}}" data-id = "{{transportista.id}}"  data-contacto = "{{contacto.id}}" onclick="actualizarContacto(this)">{{contacto.NombreIFE}}</a></li>
+                            </ul>
+                        </td>
+                        <td>{{contacto.Puesto}}</td>
+                        <td>{{contacto.Telefono}}</td>
+                        <td>{{contacto.Correo}}</td>
+                        <td>{{contacto.CorreoAdicional}}</td>
+                        <td>{{transportista.IDEstatus.Nombre}}</td>
+                        <td>{{transportista.IDPrioridad.Nombre}}</td>
+                        <td>{{transportista.IDTipo.Nombre}}</td>
+                        <td>{{transportista.PaginaWeb}}</td>
+                        <td>{{transportista.RFC}}</td>
+                        <td>{{transportista.Seguridad}}</td>
+                        <td>{{transportista.Pais}}</td>
+                        <td>{{transportista.Estado}}</td>
+                        <td>{{transportista.Municipio}}</td>
+                        <td>{{transportista.Calle}}</td>
+                        <td>{{transportista.NumeroExt}}</td>
+                        <td>{{transportista.NumeroInt}}</td>
+                        <td>{{transportista.Colonia}}</td>
+                        <td>{{transportista.CodigoPostal}}</td>
+                        <td>{{transportista.Credito}}</td>
+                        <td>{{transportista.PolizaSeguro}}</td>
+                    </tr>
+                {%endif%}
+            {%endfor%}
+        {%endfor%}
+    </tbody>
+</table>
+
+<script src="{% static 'assets/global/scripts/datatable.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/datatables/datatables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/pages/scripts/table-datatables-managed.min.js' %}" type="text/javascript"></script>
+<script>
+    function actualizarContacto(e){
+        id = e.id;
+        var idT = $('#'+id+'').data('id');
+        var idC = $('#'+id+'').data('contacto');
+        $("#ContactosModal .modal-content").empty("");
+
+        $.ajax({
+            url: "actualizarContacto/"+idT+"/"+idC+"/",
+            type: 'get',
+            dataType: 'json',
+            beforeSend: function () {
+            $("#ContactosModal").modal("show");
+            },
+            success: function (data) {
+                $("#ContactosModal .modal-content").empty("");
+                $("#ContactosModal .modal-content").html(data.actualizarContacto);
+            }
+        });
+    }
+</script>

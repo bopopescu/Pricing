@@ -1,0 +1,8 @@
+<option value="Ruta">Ruta</option>
+{% for ruta in rutas %}
+    {% if ruta.id == idR %}
+        <option value="{{ruta.id}}" selected>{{ruta.NombreRuta}}</option>
+    {%else%}
+        <option value="{{ruta.id}}" >{{ruta.NombreRuta}}</option>
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,62 @@
+<div class="modal-header" style="background-color: rgb(66, 108, 140);">
+                </div>
+                <div class="modal-body" >
+                    <div class="container" style="width: fit-content;">
+                        <h2>Tipo de Unidad</h2>
+                        {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">
+                                    <strong>{{ error|escape }}</strong>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                        {% endif %}
+                        <form method="post" onsubmit="return Validate2(this);"  method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                        {{ form.Nombre}}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                        {{ form.Capacidad }}
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                        
+                                        {{ form.Medidas }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                        <div class="ui slider checkbox">
+                                        {{ form.Configuraciones }}
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4">
+                                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                                        <label class="custom-file-upload">
+                                            {{ form.Image }}
+                                            <i class="fas fa-camera"></i> Foto
+                                        </label>
+                                    </div>
+                                </div>
+                               
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </form>
+                    </div>
+                </div>

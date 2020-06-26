@@ -1,0 +1,71 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css"/>
+    
+<div class="modal-header" style=" background-color: rgb(66, 108, 140);">
+</div>
+<div class="modal-body">
+    <div class="container" style="width: 100%; padding-left: 60px;">
+        <h2>Crear Certificacion</h2>
+        <form method="post" action="{{crearCertificacion}}" id="crearCertificacion">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Nombre Certificacion</label>
+                        {{ form.Nombre }}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Crear</button>
+            <button type="button" class="btn btn-default" style="float: right;" data-dismiss="modal" >Cerrar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function sinEspacios(e){
+        return ((e.which != 32))
+    }
+
+    function mayusculas(e) {
+        e.value = e.value.toUpperCase();
+    }
+
+    var banderaCrear = 1;
+    $('#crearCertificacion').on('submit', function(event) {
+        if(banderaCrear==0){
+            return false;
+        }
+
+        if(document.getElementById("id_Nombre").value == ""){
+            alert("¡Falta el nombre de la certificacion!");
+            return false;
+        }
+
+        var form = $(this);
+        banderaCrear = 0;
+        $.ajax({
+            url: form.attr("action"),
+            data: form.serialize(),
+            type: form.attr("method"),
+            datatype: 'json',
+            success: function(data){
+                if(data.bandera == 2){
+                    tablaCertificaciones();
+                    $("#CertificacionesModal").modal("hide");
+                }
+                else if(data.bandera == 3){
+                    document.getElementById("id_Nombre").value="";
+                    alert("¡El Nombre de la certificacion ya existe!");
+                    banderaCrear = 1;
+                }
+                else if(data.bandera == 4){
+                    document.getElementById("id_Nombre").value="";
+                    alert("¡Validacion erronea en el formulario!");
+                    banderaCrear = 1;
+                }
+            }
+        });
+        return false;
+    });
+</script>

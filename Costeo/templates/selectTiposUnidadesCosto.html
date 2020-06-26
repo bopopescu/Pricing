@@ -1,0 +1,4 @@
+<option value="Tipo Unidad" selected>Tipo Unidad</option>
+{% for tipoUnidad in tiposUnidades %}
+    <option value="{{tipoUnidad.id}}" data-categoriaeje="{{tipoUnidad.IDCategoriaEje.Valor}}" >{{tipoUnidad.Nombre}}</option>
+{% endfor %}
