@@ -1,0 +1,8 @@
+<option value="Tipo Unidad">Tipo Unidad</option>
+{% for tipoUnidad in tiposUnidades %}
+    {% if tipoUnidad.id == idTU %}
+        <option value="{{tipoUnidad.id}}" data-categoriaeje="{{tipoUnidad.IDCategoriaEje.Valor}}" selected>{{tipoUnidad.Nombre}}</option>
+    {%else%}
+        <option value="{{tipoUnidad.id}}" data-categoriaeje="{{tipoUnidad.IDCategoriaEje.Valor}}" >{{tipoUnidad.Nombre}}</option>
+    {%endif%}
+{% endfor %}

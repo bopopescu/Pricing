@@ -1,0 +1,1643 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style_block%}
+<link href="{% static 'assets/global/plugins/datatables/datatables.min.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'assets/global/plugins/bootstrap-modal/css/bootstrap-modal-bs3patch.css' %}" rel="stylesheet" type="text/css" />
+<link href="{% static 'assets/global/plugins/bootstrap-modal/css/bootstrap-modal.css' %}" rel="stylesheet" type="text/css" />
+{%endblock%}
+{% block body_block %}
+<style type="text/css">
+.largesize {
+    max-width: 90%;
+    max-height: 90%;
+    width: auto;
+    height: auto;    
+}
+
+.smallsize { 
+    width: 350px;
+    height: 100px;
+}
+
+.smallsizeTarj
+ { 
+    width: 200px;
+    height: 150px;
+}
+</style>
+<div class="row">
+	<div class="col-md-6 ">
+	    <!-- BEGIN Portlet PORTLET-->
+	    <div class="portlet light">
+	        <div class="portlet-title">
+	            <div class="caption">
+	                <span class="caption-subject bold font-grey-gallery uppercase"> Datos Generales </span>
+	            </div>
+	            <div class="tools">
+	                <a href="" class="collapse"> </a>
+	                <a href="" class="fullscreen"></a>
+	            </div>
+	        </div>
+	        <div class="portlet-body">
+	            <div class="row">
+					<div class="col-md-6">
+						<h6>Razon Social: {{transport.RazonSocial}}</h6>
+						<h6>Nombre Comercial: {{transport.NombreComercial}}</h6>
+						<h6>Domicilio Comercial: {{transport.Calle}}{%if transport.NumInt != "" and transport.NumInt%}&nbsp;{{transport.NumInt}}{%endif%}{%if transport.NumExt != "" and transport.NumExt  %}&nbsp;{{transport.NumExt}}{%endif%} {{transport.Estado}} {{transport.Ciudad}}
+						{{transport.Colonia}} CP.{{transport.CP}}</h6>
+						<h6 style="padding-left: 50px;">Terminal: {{transport.BaseTerminal}}</h6>
+					</div>
+					<div class="col-md-6">
+						<h4 style="color: white">.</h4>
+						<h6 >Email: {{transport.Email}}</h6>
+						<h6 >Telefono(s): {{transport.Telefonos}}</h6>
+						<h6 >Contacto: {{transport.Colonia}}</h6>
+						<h6 >Pagina Web: {{transport.PaginaWeb}}</h6>
+					</div>
+				</div>
+				<div class="row justify-content-end" align="right" style="padding-bottom: 5px; padding-right: 5px;">
+					<button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#ExpedienteModal">Expediente</button>
+				</div>
+	        </div>
+	    </div>
+	    <!-- END GRID PORTLET-->
+	</div>
+	<div class="col-md-6 ">
+	    <!-- BEGIN Portlet PORTLET-->
+	    <div class="portlet light">
+	        <div class="portlet-title">
+	            <div class="caption">
+	                <span class="caption-subject bold font-grey-gallery uppercase"> Logo </span>
+	            </div>
+	            <div class="tools">
+	                <a href="" class="collapse"> </a>
+	                <a href="" class="fullscreen"  onclick="myFunction('logo')"> </a>
+	            </div>
+	        </div>
+	        <div class="portlet-body">
+	            <div align="center" >
+	            	<div >
+					{% if user.is_authenticated %}
+					    {% if user.roles == "administrator" %}
+							    <a href="#" role="button" data-toggle="modal" data-target="#myModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+							
+						    {% if Extra %}
+								<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Extra.id campo='Imagen'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+							{% else%}
+								<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+							{% endif%}
+						{% endif %}
+					{% endif %}
+					</div>
+					<div class="scrolling-wrapper">
+							{% if Extra %}
+								{% if Extra.Image%}
+								<img class="smallsize" src="{{ Extra.Image.url }}" id="logo" >
+								{%else%}
+									<img src="{% static 'images/temp.png' %}" style="height: 100px;">
+								{% endif %}
+								
+							{% else %}
+								<img src="{% static 'images/temp.png' %}" style="height: 100px;">
+							{% endif %}
+						<div>
+							<h6>Calificacion</h6>
+							<span class="fa fa-star checked"></span>
+							<span class="fa fa-star checked"></span>
+							<span class="fa fa-star checked"></span>
+							<span class="fa fa-star"></span>
+							<span class="fa fa-star"></span>
+						</div>
+						</div>
+					
+				</div>
+	        </div>
+	    </div>
+	    <!-- END GRID PORTLET-->
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-6 ">
+	    <!-- BEGIN Portlet PORTLET-->
+	    <div class="portlet light">
+	        <div class="portlet-title">
+	            <div class="caption">
+	                <span class="caption-subject bold font-grey-gallery uppercase">Rutas Más Frecuentes</span>
+	            </div>
+	            <div class="tools">
+	                <a href="" class="collapse"> </a>
+	                <a href="" class="fullscreen"></a>
+	            </div>
+	        </div>
+	        <div class="portlet-body">
+				<div class="row">
+					<div class="col-md-4 ">
+                            {% for ruta in transport.IDRutas.all %}
+                                <h6>{{ruta.CiudadOrigen}}-{{ruta.CiudadDestino}}</h6>
+                            {% endfor %}
+					</div>
+				</div>
+				{% if user.is_authenticated %}
+		    		{% if user.roles == "administrator" %}
+		    		<div class="row justify-content-end" align="right" style="padding-bottom: 5px; padding-right: 5px;">
+						<a href="{% url 'Rutas:routes' %}"><button type="button" class="btn btn-primary btn-sm" >Rutas <i class="fas fa-plus-circle" style="color: white"></i></button></a>
+					</div>
+					{% endif %}
+				{% endif %}
+	        </div>
+	    </div>
+	    <!-- END GRID PORTLET-->
+	</div>
+	<div class="col-md-6 ">
+	    <!-- BEGIN Portlet PORTLET-->
+	    <div class="portlet light">
+	        <div class="portlet-title">
+	            <div class="caption">
+	                <span class="caption-subject bold font-grey-gallery uppercase">Indicadores</span>
+	            </div>
+	            <div class="tools">
+	                <a href="" class="collapse"> </a>
+	                <a href="" class="fullscreen"> </a>
+	            </div>
+	        </div>
+	        <div class="portlet-body">
+	            <div align="center" >
+			
+					<table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_5">
+						<thead>
+							<tr>
+							  <th scope="col">Rank</th>
+							  <th >P.Total</th>
+							  <th>S-R</th>
+							  <th >C</th>
+							  <th >T</th>
+							  <th>Flota Total</th>
+							  <th style="font-size: 10px;">Calidad</th>
+							  <th style="font-size: 10px;">Seguridad</th>
+							  <th >ESR</th>
+							  <th ><i class="far fa-trash-alt"></i></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="odd gradeX">
+							  <th>5</th>
+							  <td>244196</td>
+							  <td>1480</td>
+							  <td>617</td>
+							  <td>1460</td>
+							  <td>3557</td>
+							  <td><i class="fas fa-check-square"></i><i class="fas fa-check-square"></i></td>
+							  <td><i class="fas fa-shield-alt"></i></td>
+							  <td><i class="fas fa-circle-notch"></i></td>
+							  <td><i class="fas fa-minus-circle" style="color: red;"></i></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				{% if user.is_authenticated %}
+			    {% if user.roles == "administrator" %}
+			    <div align="right" style="right: 3px; top: 1px;">
+				    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#myModal">Indicadores <i class="fas fa-plus-circle" style="color: white"></i></button></div>
+			    
+			    {% endif %}
+			{% endif %}
+	        </div>
+	    </div>
+	    <!-- END GRID PORTLET-->
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-6 ">
+	    <!-- BEGIN Portlet PORTLET-->
+	    <div class="portlet light">
+	        <div class="portlet-title">
+	            <div class="caption">
+	                <span class="caption-subject bold font-grey-gallery uppercase">Histórico de negocios con LogistikGo (Cardex)</span>
+	            </div>
+	            <div class="tools">
+	                <a href="" class="collapse"> </a>
+	                <a href="" class="fullscreen"></a>
+	            </div>
+	        </div>
+	        <div class="portlet-body">
+			<h4></h4>
+			<br>
+			<div class="row" style=" text-align: center;">
+
+				<div class="col-md-4 ">
+					<h5>Cotizaciones</h5>
+					<br>
+					<h6>-Caja seca 53' ft 5000 SLP_EDM</h6>
+					<h6>-Caja seca 53' ft 5000 SLP_EDM</h6>
+					<h6>-Caja seca 53' ft 5000 SLP_EDM</h6>
+				</div>
+				<div class="col-md-4 ">
+					<h5>Cotizaciones</h5>
+					<br>
+					<h6>-Reunión 05/01/2018</h6>
+				</div>
+				<div class="col-md-4 ">
+					<h5>Cotizaciones</h5>
+					<br>
+					<h6>-Proxima Reunión 05/01/2018</h6>
+				</div>
+				
+			</div>
+			{% if user.is_authenticated %}
+			    {% if user.roles == "administrator" %}
+					<div class="row justify-content-end" align="right" style="padding-bottom: 5px; padding-right: 5px;">
+						<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#ExpedienteModal">Histórico <i class="fas fa-plus-circle" style="color: white"></i></button>
+					</div>
+				{% endif %}
+			{% endif %}
+	        </div>
+	    </div>
+	    <!-- END GRID PORTLET-->
+	</div>
+	<div class="col-md-6 ">
+	    <!-- BEGIN Portlet PORTLET-->
+	    <div class="portlet light">
+	        <div class="portlet-title">
+	            <div class="caption">
+	                <span class="caption-subject bold font-grey-gallery uppercase">KPI's LogistikGO</span>
+	            </div>
+	            <div class="tools">
+	                <a href="" class="collapse"> </a>
+	                <a href="" class="fullscreen"> </a>
+	            </div>
+	        </div>
+	        <div class="portlet-body"> 
+				<div class="row" >
+					<div class="col-md-6">
+						<canvas id="myChart" width="150" height="150"></canvas>
+					</div>
+					<div class="col-md-6">
+						<br>
+						<br>
+						<br>
+						<br>
+					 	
+						<table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_5" style="">
+							<thead>
+								<tr>
+								  <th scope="col">Descripción</th>
+								  <th scope="col">Total</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX">
+								  <td>Núm. Viajes</td>
+								  <td>1250</td>
+								</tr>
+								<tr class="odd gradeX">
+								  <td>Kms. Recorrídos</td>
+								  <td>625000</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+				<div class="row" >
+					<div class="col-md-6">
+						<font size="2" face="Courier New" >
+						<table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_5" style="">
+							<thead>
+								<tr>
+								  <th scope="col">Rutas</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX">
+								  <td>Tlalnepantla-Monterrey</td>
+								</tr>
+								<tr class="odd gradeX">
+								  <td>San luis potosi-Manzanillo</td>
+								</tr>
+							</tbody>
+						</table>
+					</font>	
+					</div>
+					<div class="col-md-6">
+					 	<font size="2" face="Courier New" >
+						<table class="table table-striped table-bordered table-hover table-checkable order-column" id="sample_5" style="">
+							<thead>
+								<tr>
+								  <th scope="col">Tipos de Crédito</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="odd gradeX">
+								  <td>15 Dias</td>
+								</tr>
+								<tr class="odd gradeX">
+								  <td>30 Dias</td>
+								</tr>
+							</tbody>
+						</table>
+					</font>	
+					</div>
+
+				</div>
+	        </div>
+	    </div>
+	    <!-- END GRID PORTLET-->
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-6 ">
+	    <!-- BEGIN Portlet PORTLET-->
+	    <div class="portlet light">
+	        <div class="portlet-title">
+	            <div class="caption">
+	                <span class="caption-subject bold font-grey-gallery uppercase">Bitácora de visitas</span>
+	            </div>
+	            <div class="tools">
+	                <a href="" class="collapse"> </a>
+	                <a href="" class="fullscreen"></a>
+	            </div>
+	        </div>
+	        <div class="portlet-body">
+	        	<div class="row table-responsive" style=" text-align: center;">
+
+				<table class="table table-striped table-bordered table-hover order-column" id="sample_5" style="">
+					<thead>
+						<tr>
+						  <th>Fecha</th>
+						  <th>Rep. LGK</th>
+						  <th>Rep. Transportista</th>
+						  <th><i class="far fa-trash-alt"></i></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for bitacora in Bitacora %}
+						{% if bitacora.Active == 1%}
+						<tr>
+						  <td>{{bitacora.Fecha}}</td>
+						  <td>{{bitacora.RepLGK}}</td>
+						  <td>{{bitacora.RepTransportista}}</td>
+						  <td><a href="{% url 'TransportistasProspecto:bitacoraDelete' id=bitacora.id idtransportista=bitacora.IDTransportista%}" role="button" ><i class="fas fa-minus-circle" style="color: red;"></i></a></td>
+						</tr>
+						{%endif%}
+						{% endfor %}
+					</tbody>
+				</table>
+				
+			</div>
+				{% if user.is_authenticated %}
+				    {% if user.roles == "administrator" %}
+						<div class="row justify-content-end" align="right" style="padding-bottom: 5px; padding-right: 5px;">
+							<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#BitacoraModal">Bitácora <i class="fas fa-plus-circle" style="color: white"></i></button>
+						</div>
+					{% endif %}
+				{% endif %}
+	        </div>
+	    </div>
+	    <!-- END GRID PORTLET-->
+	</div>
+	<div class="col-md-6 ">
+	    <!-- BEGIN Portlet PORTLET-->
+	    <div class="portlet light">
+	        <div class="portlet-title">
+	            <div class="caption">
+	                <span class="caption-subject bold font-grey-gallery uppercase">Tarj. Presentación</span>
+	            </div>
+	            <div class="tools">
+	                <a href="" class="collapse"> </a>
+	                <a href="" class="fullscreen"  onclick="changetarjetas('Tarjetas'); changetarjetas('Tarjetas2')"> </a>
+	            </div>
+	        </div>
+	        <div class="portlet-body">
+	        	<div class="row" >
+					<div class="col-md-6">
+						{% if Extra %}
+							{% if Extra.TarjetaDirector %}
+								<div style="">
+									<img class="smallsizeTarj" src="{{Extra.TarjetaDirector.url }}" id="Tarjetas">
+								</div>
+							{%else%}
+								<div style="">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 200px;" >
+								</div>
+							{% endif %}
+						{% else %}
+							<div style="">
+								<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 200px;">
+							</div>
+						{% endif %}
+						<h6>Director general 
+						{% if user.is_authenticated %}
+					    	{% if user.roles == "administrator" %}  
+								{% if Extra %}
+									<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Extra.IDTransportista campo='TarjetaDir'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+								{% else%}
+									<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+								{% endif%}
+							{% endif%}
+						{% endif%}</h6>
+					</div>
+					<div class="col-md-6">
+						{% if Extra %}
+							{% if Extra.TarjetaVentas %}
+								<div style="">
+									<img class="smallsizeTarj" src="{{Extra.TarjetaVentas.url }}" id="Tarjetas2" >
+								</div>
+							{%else%}
+								<div style="">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 200px;" >
+								</div>
+							{% endif %}
+						{% else %}
+							<div style="">
+								<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 200px;">
+							</div>
+						{% endif %}
+						<h6>Ventas   
+							{% if user.is_authenticated %}
+					    		{% if user.roles == "administrator" %}
+					    			{% if Extra %}
+										<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Extra.IDTransportista campo='TarjetaVen'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+									{% else%}
+										<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+									{% endif%}
+								{% endif %}
+							{% endif %}</h6>
+					</div>
+				</div>
+				{% if user.is_authenticated %}
+				    {% if user.roles == "administrator" %}
+				    <div align="right" style="right: 3px; top: 1px;">
+					    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#TarDirModal">Tarj. Presentación <i class="fas fa-plus-circle" style="color: white"></i></button></div>
+				    
+				    {% endif %}
+				{% endif %}
+	        </div>
+	    </div>
+	    <!-- END GRID PORTLET-->
+	</div>
+</div>
+
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Logo</h2>
+		{% if form.errors %}
+        {% for field in form %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate2(this);" method="post"  enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ form.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoAltaModal"  role="dialog">
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formExpAlta.errors %}
+        {% for field in formExpAlta %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formExpAlta.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formExpAlta.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close1" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div id="ExpedienteModal" class="modal container fade" tabindex="-1">
+        <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+        </div>
+        <div class="modal-body">
+            <h2>Expediente</h2>
+				<br>
+				<div class="row">
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='formatoAlta'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalAlta" data-toggle="modal" data-target="#formatoAltaModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif%}
+								{% endif%}
+							</div>
+							<div align="center">
+								<h6>Formato alta proveedor</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.FormatoAlta %}
+								{{Expediente.extensionFormAlt}}
+									{% if Expediente.extensionFormAlt == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.FormatoAlta.url }}" type="application/pdf" width="240px" height="190px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.FormatoAlta.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;" >
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='actaConstitutiva'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalActaConstitutiva" data-toggle="modal" data-target="#formatoActaConstitutivaModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif%}
+								{% endif%}
+							</div>
+							<div align="center">
+								<h6>Acta Constitutiva</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.ActaConstitutiva %}
+									{% if Expediente.extensionActCon == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.ActaConstitutiva.url }}" type="application/pdf" width="240px" height="190px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.ActaConstitutiva.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='cedulaFiscal'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalCedulaFiscal" data-toggle="modal" data-target="#formatoCedulaFiscalModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Cedula Fiscal</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.CedulaFiscal %}
+									{% if Expediente.extensionCedFis == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.CedulaFiscal.url }}" type="application/pdf" width="240px" height="200px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.CedulaFiscal.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='iFERepresentante'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalIFERepresentante" data-toggle="modal" data-target="#formatoIFERepresentanteModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>IFE Representante</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.IFERepresentante %}
+									{% if Expediente.extensionIFE == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.IFERepresentante.url }}" type="application/pdf" width="240px" height="200px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.IFERepresentante.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='comprobanteDomicilio'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalComDom" data-toggle="modal" data-target="#formatoComDomModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Comprobante domicilio</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.ComprobanteDomicilio %}
+									{% if Expediente.extensionComDom == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.ComprobanteDomicilio.url }}" type="application/pdf" width="240px" height="190px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.ComprobanteDomicilio.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;" >
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='caratulaBancaria'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalCarBan" data-toggle="modal" data-target="#formatoCarBanModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Carátula bancaria</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.CaratulaBancaria %}
+									{% if Expediente.extensionCarBan == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.CaratulaBancaria.url }}" type="application/pdf" width="240px" height="190px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.CaratulaBancaria.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='convenioConfidencialidad'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalConCon" data-toggle="modal" data-target="#formatoConConModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Convenio Confidencialidad</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.ConvenioConfidencialidad %}
+									{% if Expediente.extensionConCon == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.ConvenioConfidencialidad.url }}" type="application/pdf" width="240px" height="200px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.ConvenioConfidencialidad.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='contratoServicios'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalConSer" data-toggle="modal" data-target="#formatoConSerModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Cedula Fiscal</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.ContratoServicios %}
+									{% if Expediente.extensionConSer == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.ContratoServicios.url }}" type="application/pdf" width="240px" height="200px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.ContratoServicios.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='convenioTarifas'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalConTar" data-toggle="modal" data-target="#formatoConTarModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Convenio tarifas</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.ConvenioTarifas %}
+									{% if Expediente.extensionConTar == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.ConvenioTarifas.url }}" type="application/pdf" width="240px" height="190px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.ConvenioTarifas.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;" >
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='descripcion'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalDes" data-toggle="modal" data-target="#formatoDesModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Descripción</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.Descripcion %}
+									{% if Expediente.extensionDes == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.Descripcion.url }}" type="application/pdf" width="240px" height="190px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.Descripcion.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='permisos'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalPer" data-toggle="modal" data-target="#formatoPerModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Permisos</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.Permisos %}
+									{% if Expediente.extensionPer == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.Permisos.url }}" type="application/pdf" width="240px" height="200px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.Permisos.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+					<div class="col-md-3">
+						<div style="width: 250px;">
+							<div align="right">
+								{% if user.is_authenticated %}
+					    			{% if user.roles == "administrator" %}
+										{% if Expediente %}
+											<a href="{% url 'TransportistasProspecto:expedienteDelete' id=Expediente.IDTransportista campo='licencias'%}" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% else%}
+											<a href="#" role="button" ><i class="fas fa-minus-circle" style="color: red"></i></a>
+										{% endif%}
+										<a href="#" role="button" id="swmodalLic" data-toggle="modal" data-target="#formatoLicModal"><i class="fas fa-plus-circle" style="color: green"></i></a>
+										 &nbsp;
+									{% endif %}
+								{% endif %}
+							</div>
+							<div align="center">
+								<h6>Licencias</h6>
+							</div>
+							{% if Expediente %}
+								{% if Expediente.Licencias %}
+									{% if Expediente.extensionLic == '.pdf' %}
+									<div style="height: 200px;">
+										<embed src="{{Expediente.Licencias.url }}" type="application/pdf" width="240px" height="200px">
+									</div>
+									{% else %}
+									<div style="height: 200px;">
+										<img src="{{Expediente.Licencias.url }}" style="height: 150px; width: 250px;">
+									</div>
+									{% endif %}
+								{%else%}
+									<div style="height: 200px;">
+										<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+									</div>
+								{% endif %}
+							{% else %}
+								<div style="height: 200px;">
+									<img src="{% static 'images/temp.png' %}" style="height: 150px; width: 250px;">
+								</div>
+							{% endif %}
+							
+						</div>
+					</div>
+				</div>
+            <div align="right">
+                <button type="button" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+            </div>
+        </div>
+</div>
+
+<div class="modal fade" id="formatoActaConstitutivaModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+        </div>
+        <div class="modal-body">
+        <h2>Expediente</h2>
+			{% if formActaConsti.errors %}
+            {% for field in formActaConsti %}
+                {% for error in field.errors %}
+                {% if error == "El correo ya existe" %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endif %}
+                {% endfor %}
+            {% endfor %}
+            {% for error in formActaConsti.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+            {% endif %}
+            <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="form-group form-md-line-input form-md-floating-label has-error">
+                            {{ formActaConsti.as_p }}
+                        </div>
+                    </div>
+                   
+                </div>					
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+            <div align="right">
+                <button type="button close" class="btn btn-default" id="close2" data-dismiss="modal" >Cerrar</button>
+            </div>
+        </div>
+</div>
+
+<div class="modal fade" id="formatoCedulaFiscalModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+        <h2>Expediente</h2>
+			{% if formCedFis.errors %}
+            {% for field in formCedFis %}
+                {% for error in field.errors %}
+                {% if error == "El correo ya existe" %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endif %}
+                {% endfor %}
+            {% endfor %}
+            {% for error in formCedFis.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+            {% endif %}
+            <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="form-group form-md-line-input form-md-floating-label has-error">
+                            {{ formCedFis.as_p }}
+                        </div>
+                    </div>
+                   
+                </div>					
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+            <div align="right">
+                <button type="button close" class="btn btn-default" id="close3" data-dismiss="modal" >Cerrar</button>
+            </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoIFERepresentanteModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formIFE.errors %}
+        {% for field in formIFE %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formIFE.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formIFE.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close4" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoComDomModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formComDom.errors %}
+        {% for field in formComDom %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formComDom.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formComDom.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close5" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoCarBanModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formCarBan.errors %}
+        {% for field in formCarBan %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formCarBan.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formCarBan.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close6" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoConConModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formConCon.errors %}
+        {% for field in formConCon %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formConCon.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formConCon.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close7" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoConSerModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formConSer.errors %}
+        {% for field in formConSer %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formConSer.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formConSer.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close8" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoConTarModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formConTar.errors %}
+        {% for field in formConTar %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formConTar.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formConTar.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close9" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoDesModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formDesr.errors %}
+        {% for field in formDes %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formDes.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formDes.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close10" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoPerModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formPer.errors %}
+        {% for field in formPer %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formPer.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formPer.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close11" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="formatoLicModal" role="dialog" >
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    <h2>Expediente</h2>
+		{% if formLic.errors %}
+        {% for field in formLic %}
+            {% for error in field.errors %}
+            {% if error == "El correo ya existe" %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for error in formLic.non_field_errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+        {% endif %}
+        <form onsubmit="return Validate(this);"  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        {{ formLic.as_p }}
+                    </div>
+                </div>
+               
+            </div>					
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+        <div align="right">
+            <button type="button close" class="btn btn-default" id="close12" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="TarDirModal" role="dialog">
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+    	<div class="container">
+	        <h2>Tarjetas Presentacion</h2>
+	        <div class="row">
+				{% if formTarDir.errors %}
+	            {% for field in formTarDir %}
+	                {% for error in field.errors %}
+	                {% if error == "El correo ya existe" %}
+	                    <div class="alert alert-danger">
+	                        <strong>{{ error|escape }}</strong>
+	                    </div>
+	                {% endif %}
+	                {% endfor %}
+	            {% endfor %}
+	            {% for error in formTarDir.non_field_errors %}
+	                <div class="alert alert-danger">
+	                    <strong>{{ error|escape }}</strong>
+	                </div>
+	            {% endfor %}
+	            {% endif %}
+	            <form onsubmit="return Validate2(this);" method="post"  enctype="multipart/form-data">
+	                {% csrf_token %}
+	                <div class="row">
+	                    <div class="col-lg-6 col-md-6">
+	                        <div class="form-group form-md-line-input form-md-floating-label has-error">
+	                            {{ formTarDir.as_p }}
+	                        </div>
+	                    </div>
+	                   
+	                </div>					
+	                <button type="submit" class="btn btn-primary">Guardar</button>
+	            </form>
+	        </div>
+	        <div class="row">
+				{% if formTarVent.errors %}
+	            {% for field in formTarVent %}
+	                {% for error in field.errors %}
+	                {% if error == "El correo ya existe" %}
+	                    <div class="alert alert-danger">
+	                        <strong>{{ error|escape }}</strong>
+	                    </div>
+	                {% endif %}
+	                {% endfor %}
+	            {% endfor %}
+	            {% for error in formTarVent.non_field_errors %}
+	                <div class="alert alert-danger">
+	                    <strong>{{ error|escape }}</strong>
+	                </div>
+	            {% endfor %}
+	            {% endif %}
+	            <form onsubmit="return Validate2(this);" method="post"  enctype="multipart/form-data">
+	                {% csrf_token %}
+	                <div class="row">
+	                    <div class="col-lg-6 col-md-6">
+	                        <div class="form-group form-md-line-input form-md-floating-label has-error">
+	                            {{ formTarVent.as_p }}
+	                        </div>
+	                    </div>
+	                   
+	                </div>					
+	                <button type="submit" class="btn btn-primary">Guardar</button>
+	            </form>
+	        </div>
+	    </div>
+        <div align="right">
+            <button type="button" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="BitacoraModal" role="dialog">
+    <div class="modal-header" style="background-color: rgb(66, 108, 140);">
+    </div>
+    <div class="modal-body">
+        <h2>Bitácora de visitas</h2>
+        <div class="container">
+			{% if formBitac.errors %}
+            {% for field in formBitac %}
+                {% for error in field.errors %}
+                {% if error == "El correo ya existe" %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endif %}
+                {% endfor %}
+            {% endfor %}
+            {% for error in formBitac.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+            {% endif %}
+            <form onsubmit="return Validate2(this);" method="post"  enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="form-group form-md-line-input form-md-floating-label has-error">
+                            {{ formBitac.as_p }}
+                        </div>
+                    </div>
+                   
+                </div>					
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+        <div align="right">
+            <button type="button" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block script_block %}
+<script src="{% static 'assets/layouts/global/scripts/quick-sidebar.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/datatables/datatables.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/datatables/plugins/bootstrap/datatables.bootstrap.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/bootstrap-modal/js/bootstrap-modalmanager.js' %}" type="text/javascript"></script>
+<script src="{% static 'assets/global/plugins/bootstrap-modal/js/bootstrap-modal.js' %}" type="text/javascript"></script>
+<script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/Transportistas/carrierView.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/Transportistas/validatefiles.js' %}"></script>
+<script type="text/javascript">
+	if("{{bandModal}}"==1)
+        $('#ExpedienteModal').modal('show');
+
+</script>
+{% endblock %}

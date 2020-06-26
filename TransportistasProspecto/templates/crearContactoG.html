@@ -1,0 +1,233 @@
+{% load static %}
+<div class="modal-header" style=" background-color: rgb(66, 108, 140);">
+</div>
+
+<div class="modal-body">
+    <div class="container" style="width: 100%; padding-left: 60px;">
+        <h2 id="TituloID">Crear Contacto</h2>
+        <form method="POST" action={{crearContactoG}} id="crearContactoG">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Profesion</label>
+                        {{ form.Profesion }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Primer Nombre</label>
+                        {{ form.PrimerNombre }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Segundo Nombre</label>
+                        {{ form.SegundoNombre }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Apellido Paterno</label>
+                        {{ form.ApellidoPaterno }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Apellido Materno</label>
+                        {{ form.ApellidoMaterno }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>NombreIFE</label>
+                        {{ form.NombreIFE }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Puesto</label>
+                        {{ form.Puesto }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Telefono</label>
+                        {{ form.Telefono }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Correo</label>
+                        {{ form.Correo }}
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="form-group form-md-line-input form-md-floating-label has-error">
+                        <label>Correo Adicional</label>
+                        {{ form.CorreoAdicional }}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="id_Guardar">Crear</button>
+            <button type="button" style = "float: right;" class="btn btn-default" data-dismiss="modal" >Cerrar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    function sinEspacios(e){
+        return ((e.which != 32))
+    }
+
+    function soloNumeros(e, event) {
+        texto = document.getElementById(e.id).value;
+        simbolo = event.key;
+        cadena = texto+simbolo;
+
+        if(event.key == "Backspace" ||  event.key == "ArrowLeft" || event.key == "ArrowRight"){
+            return true;
+        }
+
+        var RE = /^[0-9]+$/;
+        if (RE.test(cadena)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    var banderaCrear = 1;
+    $('#crearContactoG').on('submit', function(event) {
+        var profesion = document.getElementById("id_Profesion").value;
+        var primerNombre = document.getElementById("id_PrimerNombre").value;
+        var segundoNombre = document.getElementById("id_SegundoNombre").value;
+        var apellidoPaterno = document.getElementById("id_ApellidoPaterno").value;
+        var apellidoMaterno = document.getElementById("id_ApellidoMaterno").value;
+        var nombreIFE = document.getElementById("id_NombreIFE").value;
+        var puesto = document.getElementById("id_Puesto").value;
+        var telefono = document.getElementById("id_Telefono").value;
+        var correo = document.getElementById("id_Correo").value;
+        var correoAdicional = document.getElementById("id_CorreoAdicional").value;
+        var form = $(this);
+        var bandera = 1;
+
+        if(banderaCrear==0){
+            return false;
+        }
+
+        if(profesion == ""){
+            alert("¡Falta la profesion!");
+            bandera = 0;
+            return false;
+        }
+
+        if(primerNombre == ""){
+            alert("¡Falta el nombre!");
+            bandera = 0;
+            return false;
+        }
+
+        if(segundoNombre == ""){
+            alert("¡Falta el segundo Nombre!");
+            bandera = 0;
+            return false;
+        }
+
+        if(apellidoPaterno == ""){
+            alert("¡Falta el apellido paterno!");
+            bandera = 0;
+            return false;
+        }
+
+        if(apellidoMaterno == ""){
+            alert("¡Falta el apellido materno!");
+            bandera = 0;
+            return false;
+        }
+
+        if(nombreIFE == ""){
+            alert("¡Falta el nombreIFE!");
+            bandera = 0;
+            return false;
+        }
+
+        if(puesto == ""){
+            alert("¡Falta el puesto!");
+            bandera = 0;
+            return false;
+        }
+
+        if(telefono == ""){
+            alert("¡Falta el telefono!");
+            bandera = 0;
+            return false;
+        }
+
+        if( /^\w+([\.\+\-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(correo)==false){
+            alert("¡Error en el correo!");
+            bandera = 0;
+            return false;
+        }
+
+        if( /^\w+([\.\+\-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,4})+$/.test(correoAdicional)==false){
+            alert("¡Error en el correo adicional!");
+            bandera = 0;
+            return false;
+        }
+
+        if(bandera == 1){
+            banderaCrear = 0;
+            $.ajax({
+                url: form.attr("action"),
+                data: form.serialize(),
+                type: form.attr("method"),
+                datatype: 'json',
+                success: function(data){
+                    if(data.bandera == 2){
+                        tablaTransportistasG();
+                        $("#TransportistaModalG").modal("hide");
+
+                    }
+                    else if(data.bandera == 3){
+                        profesion = document.getElementById("id_Profesion").value = "";
+                        primerNombre = document.getElementById("id_PrimerNombre").value = "";
+                        segundoNombre = document.getElementById("id_SegundoNombre").value = "";
+                        apellidoPaterno = document.getElementById("id_ApellidoPaterno").value = "";
+                        apellidoMaterno = document.getElementById("id_ApellidoMaterno").value = "";
+                        nombreIFE = document.getElementById("id_NombreIFE").value = "";
+                        puesto = document.getElementById("id_Puesto").value = "";
+                        telefono = document.getElementById("id_Telefono").value = "";
+                        correo = document.getElementById("id_Correo").value ="";
+                        correoAdicional = document.getElementById("id_CorreoAdicional").value = "";
+                        alert("¡El contacto ya existe en ese transportista!");
+                        banderaCrear = 1;
+                    }
+                    else if(data.bandera == 4){
+                        profesion = document.getElementById("id_Profesion").value = "";
+                        primerNombre = document.getElementById("id_PrimerNombre").value = "";
+                        segundoNombre = document.getElementById("id_SegundoNombre").value = "";
+                        apellidoPaterno = document.getElementById("id_ApellidoPaterno").value = "";
+                        apellidoMaterno = document.getElementById("id_ApellidoMaterno").value = "";
+                        nombreIFE = document.getElementById("id_NombreIFE").value = "";
+                        puesto = document.getElementById("id_Puesto").value = "";
+                        telefono = document.getElementById("id_Telefono").value = "";
+                        correo = document.getElementById("id_Correo").value ="";
+                        correoAdicional = document.getElementById("id_CorreoAdicional").value = "";
+                        alert("¡Validacion erronea en el formulario!");
+                        banderaCrear = 1;
+                    }
+                }
+            });
+        }
+        return false;
+    });
+</script>

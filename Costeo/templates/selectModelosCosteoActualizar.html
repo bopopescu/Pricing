@@ -1,0 +1,8 @@
+<option value=0>Modelo</option>
+{% for modelo in tiposUnidades.IDModelo.all %}:
+    if IDModelo==modelo.id:
+        <option value="{{modelo.id}}" data-costosunidad="{{modelo.CostosUnidad}}" data-costoscaja="{{modelo.CostosCaja}}"  selected>{{modelo.Modelo}}</option>
+
+    else:
+        <option value="{{modelo.id}}" data-costosunidad="{{modelo.CostosUnidad}}" data-costoscaja="{{modelo.CostosCaja}}"  >{{modelo.Modelo}}</option>
+{% endfor %}

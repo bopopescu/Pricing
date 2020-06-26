@@ -1,0 +1,1045 @@
+{% extends "base.html" %}
+{% block style_block %}
+	{% load static %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/pretty-checkbox@3.0/dist/pretty-checkbox.min.css"/>
+{% endblock %}
+{% block body_block %}
+    {% load static %}
+	<!-- BEGIN EXAMPLE TABLE PORTLET-->
+
+    <div class="portlet light portlet-fit portlet-datatable bordered">
+        <div class="portlet-title">
+            <div class="caption">
+                <span class="caption-subject font-red sbold uppercase"><i class="fas fa-calculator"></i>Crear costeo</span>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <form method="post" id="costeo">
+				<!---Depreciación --->
+				<input type="hidden" id="mesesId" name="mesesId" value={{depreciacion.Meses}}>
+				<input type="hidden" id="costosUnidadId" name="costosUnidadId" value={{depreciacion.CostosUnidad}}>
+				<input type="hidden" id="costosCajaId" name="costosCajaId" value={{depreciacion.CostosCaja}}>
+				<input type="hidden" id="viajesMesId" name="viajesMesId" value={{depreciacion.ViajesMes}}>
+				<input type="hidden" id="kmsMesXunidadId" name="kmsMesXunidadId" value={{depreciacion.KmsMesXunidad}}>
+				<input type="hidden" id="kmsMaximoId" name="kmsMaximoId" value={{depreciacion.KmsMaximo}}>
+				<input type="hidden" id="depTractoId" name="depTractoId" value={{depreciacion.DepTracto}}>
+				<input type="hidden" id="depCajaId" name="depCajaId" value={{depreciacion.DepCaja}}>
+				<input type="hidden" id="rentaGPSId" name="rentaGPSId" value={{depreciacion.RentaGPS}}>
+				<input type="hidden" id="placasTenenciaId" name="placasTenenciaId" value={{depreciacion.PlacasTenencia}}>
+				<input type="hidden" id="seguroId" name="seguroId" value={{depreciacion.Seguro}}>
+				<input type="hidden" id="admvoId" name="admvoId" value={{depreciacion.Admvo}}>
+				<input type="hidden" id="financierosId" name="financierosId" value={{depreciacion.Financieros}}>
+				<input type="hidden" id="mttoUnidadXkmId" name="mttoUnidadXkmId" value={{depreciacion.MttoUnidadXkm}}>
+				<input type="hidden" id="llantasId" name="llantasId" value={{depreciacion.Llantas}}>
+				<input type="hidden" id="operadorId" name="operadorId" value={{depreciacion.Operador}}>
+				<!---Factores y premisas --->
+				<input type="hidden" id="unidadId" name="unidadId" value={{FactoresPremisas.Unidad}}>
+				<input type="hidden" id="cajaId" name="cajaId" value="">
+				<input type="hidden" id="kmSencilloId" name="kmSencilloId" value={{FactoresPremisas.Km}}>
+				<input type="hidden" id="kmMensualesId" name="kmMensualesId" value={{FactoresPremisas.KmMensuales}}>
+				<input type="hidden" id="casetaSingleId" name="casetaSingleId" value={{FactoresPremisas.CasetaSingle}}>
+				<input type="hidden" id="rendimiento" name="rendimientoId" value={{FactoresPremisas.Rendimiento}}>
+				<input type="hidden" id="dieselId" name="dieselId" value={{FactoresPremisas.Diesel}}>
+				<input type="hidden" id="dieselSinIvaId" name="dieselSinIvaId" value={{FactoresPremisas.DieselSinIva}}>
+				<!---Costo Operativo Directo Variable --->
+				<input type="hidden" id="CombustibleId" name="CombustibleId" value="">
+				<input type="hidden" id="CasetasId" name="CasetasId" value="">
+				<input type="hidden" id="OperadorId" name="OperadorId" value="">
+				<input type="hidden" id="SubTotalId" name="SubTotalId" value="">
+				<!---Costo Operativo indirecto fijo --->
+				<input type="hidden" id="MttoUnidadId" name="MttoUnidadId" value="">
+				<input type="hidden" id="LlantasUnidadId" name="LlantasUnidadId" value="">
+				<input type="hidden" id="GPSId" name="GPSId" value="">
+				<input type="hidden" id="SeguroId" name="SeguroId" value="">
+				<input type="hidden" id="PlacasTenenciaCostId" name="PlacasTenenciaCostId" value="">
+				<input type="hidden" id="SubTotal2Id" name="SubTotal2Id" value="">
+				<!---Costos Admvo & Financiero --->
+				<input type="hidden" id="AdmvoId" name="AdmvoId" value="">
+				<input type="hidden" id="FinancierosId" name="FinancierosId" value="">
+				<input type="hidden" id="DeprUnidadId" name="DeprUnidadId" value="">
+				<input type="hidden" id="DeprRemolqueId" name="DeprRemolqueId" value="">
+				<input type="hidden" id="SubTotal3Id" name="SubTotal3Id" value="">
+				{% csrf_token %}
+				<div class="row">
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Empresa</label>
+			                {{ form.Empresa }}
+			            </div>
+					</div>
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Rutas</label>
+			                {{ form.IDRuta }}
+			            </div>
+					</div>
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+							<label>Kilometros</label>
+							<input type="text" name="Kilometros" class="form-control" placeholder="Kilometros" onkeydown="return soloNumerosD(this, event);" onkeyup="return soloNumerosU(this, event);" required id="id_KilometrosAux">
+							{{ form.Kilometros }}
+			            </div>
+					</div>
+				</div>
+
+			    <div class="row">
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Ciudad Origen</label>
+			                {{ form.CiudadOrigen }}
+			            </div>
+					</div>
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Estado Origen</label>
+			                {{ form.EstadoOrigen }}
+			            </div>
+					</div>
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>CP Origen</label>
+			                {{ form.CPOrigen }}
+			            </div>
+					</div>
+
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Ciudad Destino</label>
+			                {{ form.CiudadDestino }}
+			            </div>
+					</div>
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Estado Destino</label>
+			                {{ form.EstadoDestino }}
+			            </div>
+					</div>
+					<div class="col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>CP Destino</label>
+			                {{ form.CPDestino }}
+			            </div>
+					</div>
+				</div>
+
+			    <div class="row">
+					<div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Tpos Unidades</label>
+			                {{ form.IDTipoUnidad }}
+			            </div>
+					</div>
+
+					<div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Modelos</label>
+			                {{ form.IDModelo }}
+			            </div>
+					</div>
+					
+			    	<div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+							<label>Casetas</label>
+							<input type="text" name="Casetas" class="form-control" placeholder="Casetas" onkeydown="return formatoNumDE(this,event);" onkeyup="formatoNumUE(this,event);" required id="id_CasetasAux">
+							{{ form.Casetas }}
+			            </div>
+					</div>
+			        <div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Producto</label>
+			                {{ form.Producto }}
+			            </div>
+			        </div>
+					<div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+						<div class="form-group form-md-line-input form-md-floating-label">
+							<br>
+							<div class="pretty p-icon p-round p-pulse">
+								{{ form.ViajeRedondo }}
+								<div class="state p-success">
+									<i class="icon mdi mdi-check"></i>
+									<label>Viaje Redondo</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			    <div class="row">
+			    	<div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+							<label>Total Costos</label>
+							<input type="text" name="TotalCostos" class="form-control" placeholder="Total Costos" onkeydown="return numerosDecimales(this, event);" required readonly id="id_TotalCostosAux">
+			                {{ form.TotalCostos }}
+			            </div>
+					</div>
+
+			        <div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>Factor de Ajuste %</label>
+			                {{ form.FactorAjustePor }}
+			            </div>
+					</div>
+					
+					<div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+							<label>Factor de Ajuste</label>
+							<input type="text" name="FactorAjuste" class="form-control" placeholder="Factor de Ajuste" onkeydown="return numerosDecimales(this, event);" readonly required id="id_FactorAjusteAux">
+			                {{ form.FactorAjuste }}
+			            </div>
+			        </div>
+					
+			        <div class="col-lg-1 col-md-1">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+			            	<label>%</label>
+			                {{ form.MopPor }}
+			            </div>
+					</div>
+					
+			        <div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+							<label>Mop</label>
+							<input type="text" class="form-control" placeholder="Mop" onkeydown="return numerosDecimales(this, event);" required readonly id="id_MopAux">
+			                {{ form.Mop }}
+			            </div>
+			        </div>
+			        <div class="col-lg-2 col-md-2">
+			            <div class="form-group form-md-line-input form-md-floating-label has-error">
+							<label>Total Transportista</label>
+							<input type="text" name="TotalTransportista" class="form-control" placeholder="Total Transportista" onkeydown="return numerosDecimales(this, event);" required readonly id="id_TotalTransportistaAux">
+							{{ form.TotalTransportista }}
+			            </div>
+			        </div>
+				</div>
+				<button type="submit" style="float:right;" class="btn btn-primary">Guardar</button>
+			</form>
+			<button class="btn btn-primary" onclick="ocultaPremisas()">Premisas</button>
+		</div>
+        <div class="container" id="PreimisasHide" style="display: none">
+	    	<div class="col-lg-4 col-md-4">
+	    		<table class="table table-striped table-bordered table-hover" id="" >
+					<thead>
+						<tr>
+						  <th scope="col">Depreciación</th>
+						  <th style="text-align:right; color:blue;" id="tdMeses" onclick="clickcell('tdMeses','mesesId')"></th>
+						  <th scope="col">Meses</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Costo Unidad </td>
+						  <td style="text-align:right; color:blue;"  id="tdCostoUnidad" onclick="clickcell('tdCostoUnidad','costosUnidadId')"></td>
+						  <td id="tdUnidad"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Costo Caja</td>
+						  <td style="text-align:right; color:blue;" onclick="clickcell('tdCostosCaja','costosCajaId')" id="tdCostosCaja"></td>
+						  <td id="tdCaja"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Viajes al mes</td>
+						  <td style="text-align:right; color:blue;" onclick="clickcell('tdViajesMes','viajesMesId')" id="tdViajesMes"></td>
+						  <td id="tdMes"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Kms al mes por unidad</td>
+						  <td style="text-align:right; color:blue;" onclick="clickcell('tdKmsMesXunidad','kmsMesXunidadId')" id="tdKmsMesXunidad"></td>
+						  <td id="tdKmMes"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>kmsMaximo</td>
+						  <td style="text-align:right; color:blue;" onclick="clickcell('tdkmsMaximo','kmsMaximoId')" id="tdkmsMaximo"></td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-striped table-bordered table-hover" id="" >
+					<thead>
+						<tr>
+						  <th scope="col">Factores y Premisas</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>{{FactoresPremisas.Unidad}} Trailer; {{FactoresPremisas.Caja}} Remolque </td>
+						  <td style="text-align:right; color:blue;" id="tdKunidad" onclick="clickcell('tdKunidad','unidadId')"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Km</td>
+						  <td style="text-align:right" id="tdKmSencillo"  ></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Kms mensuales</td>
+						  <td style="text-align:right" id="tdKmMensuales" ></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Casetas single</td>
+						  <td style="text-align:right" id="tdCasetaSingle" ></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td><u>Rendimiento</u></td>
+						  <td style="text-align:right; color:blue;" id="tdRendimiento" onclick="clickcell('tdRendimiento','rendimiento')"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Diesel</td>
+						  <td style="text-align:right" id="tdDiesel"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Diesel sin IVA</td>
+						  <td style="text-align:right" id="tdDieselSinIva"></td>
+						</tr>
+					</tbody>
+				</table>
+	    	</div>
+	    	<div class="col-lg-3 col-md-3">
+	    		<table class="table table-striped table-bordered table-hover" id="" style="width: 90%">
+					<thead>
+						<tr>
+						  <th scope="col">Facto/ KM Depreciación</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Dep Tracto </td>
+						  <td style="text-align:right; color:blue;" id="tddepTracto"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Dep Caja</td>
+						  <td style="text-align:right; color:blue;" id="tddepCaja"></td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-striped table-bordered table-hover" id="" style="width: 70%">
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Renta GPS</td>
+						  <td style="text-align:right; color:blue;" id="tdrentaGPS" onclick="clickcell('tdrentaGPS','rentaGPSId')"></td>
+						  <td style="text-align:right" id="tdGPS"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Placas y tenencias</td>
+						  <td style="text-align:right; color:blue;" id="tdplacasTenencia" onclick="clickcell('tdplacasTenencia','placasTenenciaId')"></td>
+						  <td style="text-align:right" id="tdPlacas"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Seguro</td>
+						  <td style="text-align:right; color:blue;" id="tdseguro" onclick="clickcell('tdseguro','seguroId')"></td>
+						  <td style="text-align:right" id="tdSegurokm"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Admvo (%)</td>
+						  <td style="text-align:right; color:blue;" id="tdAdmvo" onclick="clickcell('tdAdmvo','admvoId')"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Financieros (%)</td>
+						  <td style="text-align:right; color:blue;" id="tdFinancieros" onclick="clickcell('tdFinancieros','financierosId')"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Mtto unidad por km</td>
+						  <td style="text-align:right; color:blue;" id="tdMtto" onclick="clickcell('tdMtto','mttoUnidadXkmId')"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Llantas</td>
+						  <td style="text-align:right; color:blue;" id="tdLlantas" onclick="clickcell('tdLlantas','llantasId')"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Operador</td>
+						  <td style="text-align:right; color:blue;" id="tdOperador" onclick="clickcell('tdOperador','operadorId')"></td>
+						</tr>
+					</tbody>
+				</table>
+	    	</div>
+	    	<div class="col-lg-4 col-md-4">
+	    		<table class="table table-striped table-bordered table-hover" id="" >
+					<thead>
+						<tr>
+						  <th scope="col">Costo Operativo Directo Variable</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Combustible </td>
+						  <td style="text-align:right" id="tdCombustible"></td>
+						  <td id="tdComb"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Casetas</td>
+						  <td style="text-align:right" id="tdCasetas"></td>
+						  <td id="tdCast"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Operador</td>
+						  <td style="text-align:right" id="tdOperadorOperativo"></td>
+						  <td id="tdOper"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>SubTotal</td>
+						  <td style="text-align:right" id="tdSubtotal1"></td>
+						  <td id="tdsub1"></td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-striped table-bordered table-hover" id="" >
+					<thead>
+						<tr>
+						  <th scope="col">Costo Operativo indirecto fijo</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Mtto Unidad </td>
+						  <td style="text-align:right" id="tdMttoUnidad"></td>
+						  <td id="tdMttoUnidadPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Llantas Unidad</td>
+						  <td style="text-align:right" id="tdLlantasUnidad"></td>
+						  <td id="tdLlantasUnidadPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>GPS</td>
+						  <td style="text-align:right" id="tdGPSCostos"></td>
+						  <td id="tdGPSCostosPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Seguro</td>
+						  <td style="text-align:right" id="tdSeguroCostos"></td>
+						  <td id="tdSeguroCostosPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Placas y Tenencia</td>
+						  <td style="text-align:right" id="tdPlacasTenencia"></td>
+						  <td id="tdPlacasTenenciaPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>SubTotal</td>
+						  <td style="text-align:right" id="tdSubTotal2"></td>
+						  <td id="tdSubTotal2Por"></td>
+						</tr>
+					</tbody>
+				</table>
+				<table class="table table-striped table-bordered table-hover" id="">
+					<thead>
+						<tr>
+						  <th scope="col">Costos Admvo & Financiero</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd gradeX">
+						  <td>Admvo</td>
+						  <td style="text-align:right" id="tdAdmvoCostos" ></td>
+						  <td id="tdAdmvoCostosPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Financieros</td>
+						  <td style="text-align:right" id="tdFinancierosCostos"></td>
+						  <td id="tdFinancierosCostosPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Depr. Unidad</td>
+						  <td style="text-align:right" id="tdDeprUnidad"></td>
+						  <td id="tdDeprUnidadPor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>Depr. Remolque</td>
+						  <td style="text-align:right" id="tdDeprRemolque"></td>
+						  <td id="tdDeprRemolquePor"></td>
+						</tr>
+						<tr class="odd gradeX">
+						  <td>SubTotal</td>
+						  <td style="text-align:right" id="tdSubtotal3"></td>
+						  <td id="tdSubtotal3Por"></td>
+						</tr>
+					</tbody>
+				</table>
+				<h4 style="margin-top: 10px;">Total Costos</h4>
+				<h4 id="id_TotalCostosP"></h4>
+	    	</div>
+		</div>
+    </div>                 
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_block %}
+	{% load static %}
+	<script src="{% static 'js/Costeo/costeos.js' %}"></script>
+	<script>
+		var codO = "";
+		var codD = "";
+		var servidor = "http://gaia.inegi.org.mx/sakbe_v3.1/";
+		
+		window.onload = function() {
+			document.getElementById("id_KilometrosAux").value = convertidorFormatoNum(1);
+			document.getElementById("id_Kilometros").value = 1;
+			document.getElementById("id_CasetasAux").value = convertidorDivisaMXN(1);
+			document.getElementById("id_Casetas").value = 1;
+			document.getElementById("id_FactorAjustePor").value = 0;
+			document.getElementById("id_FactorAjusteAux").value = convertidorDivisaMXN(0);
+			document.getElementById("id_FactorAjuste").value = 0;
+			document.getElementById("id_MopPor").value = 15;
+			document.getElementById("id_MopAux").value = convertidorDivisaMXN(0);
+			document.getElementById("id_Mop").value = 0;
+
+			document.getElementById("id_TotalTransportista").style.display = "none";
+			document.getElementById("id_Mop").style.display = "none";
+			document.getElementById("id_TotalCostos").style.display = "none";
+			document.getElementById("id_Kilometros").style.display = "none";
+			document.getElementById("id_Casetas").style.display = "none";
+			document.getElementById("id_FactorAjuste").style.display = "none";
+
+			selectRutasCosto();
+			selectTiposUnidadesCosto();
+		};
+
+		function selectRutasCosto(){
+            $.ajax({
+                url:  'selectRutasCosto/',
+                type: 'POST',
+                dataType: 'json',
+                ContentType: 'application/json; charset=utf-8',
+                data: {'data':'',"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                success: function (data) {
+					$("#id_IDRuta").html(data.selectRutasCosto);
+                }
+            });
+		}
+
+		function selectTiposUnidadesCosto(){
+            $.ajax({
+                url:  'selectTiposUnidadesCosto/',
+                type: 'POST',
+                dataType: 'json',
+                ContentType: 'application/json; charset=utf-8',
+                data: {'data': '',"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                success: function (data) {
+                    $("#id_IDTipoUnidad").html(data.selectTiposUnidadesCosto);
+                }
+            });
+		}
+
+        function soloNumerosD(e,event){
+			document.getElementById("id_Kilometros").value = "";
+			var texto = document.getElementById(e.id).value;
+			var simbolo = event.key;
+			var cadena = texto+simbolo;
+			cadena = cadena.replace(/,/g, "");
+
+			if(event.key == "Backspace" ||  event.key == "ArrowLeft" || event.key == "ArrowRight"){
+				return true;
+			}
+
+			var RE =  /^([0-9])*$/;
+			if (RE.test(cadena)){
+				document.getElementById("id_Kilometros").value = cadena;
+				cadena = parseFloat(cadena).toLocaleString("en-US");
+				e.value = cadena;
+				return false;
+			}
+			else{
+				return false;
+			}
+		}
+
+		function soloNumerosU(e,event){
+			document.getElementById("id_Kilometros").value = "";
+			var texto = document.getElementById(e.id).value;
+			var cadena = texto;
+			cadena = cadena.replace(/,/g, "");
+
+			if(cadena == ""){
+				return true;
+			}
+
+			var RE =  /^([0-9])*$/;
+			if (RE.test(cadena)){
+				document.getElementById("id_Kilometros").value = cadena;
+				cadena = parseFloat(cadena).toLocaleString("en-US");
+				e.value = cadena;
+				return false;
+			}
+			else{
+				return false;
+			}
+		}
+
+		function formatoNumDE(e, event) {
+			document.getElementById("id_Casetas").value = "";
+			var texto = document.getElementById(e.id).value;
+			var simbolo = event.key;
+			var cadena = texto+simbolo;
+			cadena = cadena.replace(/\$/g, "");
+			cadena = cadena.replace(/,/g, "");
+
+			if(event.key == "Backspace"){
+				return true;
+			}
+
+			var RE = /^([0-9]+\.?[0-9]{0,2})$/;
+			if (RE.test(cadena)){
+				var respuesta =(cadena+"").split(".")[1];
+				if(simbolo == "." && respuesta == ""){
+				document.getElementById("id_Casetas").value = cadena;
+				cadena = parseFloat(cadena).toLocaleString("en-US");
+				cadena += ".";
+				}
+				else if(simbolo == 0 && respuesta == 0){
+				document.getElementById("id_Casetas").value = cadena;
+				cadena = parseFloat(cadena).toLocaleString("en-US");
+				cadena += ".0";
+				}
+				else{
+				document.getElementById("id_Casetas").value = cadena;
+				cadena = parseFloat(cadena).toLocaleString("en-US");
+				}
+				e.value = "$"+cadena;
+				return false;
+			}
+			else{
+				return false;
+			}
+		}
+
+		function formatoNumUE(e,event){
+			document.getElementById("id_Casetas").value = "";
+			var cadena = e.value;
+			cadena = cadena.replace(/\$/g, "");
+			cadena = cadena.replace(/,/g, "");
+			
+
+			var RE = /^([0-9]+\.?[0-9]{0,2})$/;
+			if (RE.test(cadena)){
+				var cadenaAux = cadena;
+				var respuesta =(cadena+"").split(".")[1];
+				
+				if(respuesta == ""){
+					document.getElementById("id_Casetas").value = cadena;
+					cadena = parseFloat(cadena).toLocaleString("en-US");
+					cadena += ".";
+				}
+				else if(respuesta == 0){
+					document.getElementById("id_Casetas").value = cadena;
+					cadena = parseFloat(cadena).toLocaleString("en-US");
+					cadena += ".0";
+				}
+				else{
+					document.getElementById("id_Casetas").value = cadena;
+					cadena = parseFloat(cadena).toLocaleString("en-US");
+				}
+
+				e.value = "$"+cadena;
+				return false;
+			}
+		}
+
+		function numerosDecimales(e, event) {
+			var texto = document.getElementById(e.id).value;
+			var simbolo = event.key;
+			var cadena = texto+simbolo;
+
+			if(event.key == "Backspace" ||  event.key == "ArrowLeft" || event.key == "ArrowRight"){
+				return true;
+			}
+
+			var RE = /^([0-9]+\.?[0-9]{0,2})$/;
+			if (RE.test(cadena)){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+
+		function numerosDecimales100(e, event) {
+			var texto = document.getElementById(e.id).value;
+			var simbolo = event.key;
+			var cadena = texto+simbolo;
+
+			if(event.key == "Backspace" ||  event.key == "ArrowLeft" || event.key == "ArrowRight"){
+				return true;
+			}
+
+			var RE = /^([0-9]+\.?[0-9]{0,2})$/;
+			if (RE.test(cadena)){
+				if(parseFloat(cadena) <= 100){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+			else{
+				return false;
+			}
+		}
+
+		function buscarRutaCosto(idR){
+			document.getElementById("id_Empresa").value = "";
+			document.getElementById("id_KilometrosAux").value = convertidorFormatoNum(1);
+			document.getElementById("id_Kilometros").value =  1;
+			document.getElementById("id_CiudadOrigen").value = "";
+			document.getElementById("id_EstadoOrigen").value = "";
+			document.getElementById("id_CPOrigen").value = "";
+			document.getElementById("id_CiudadDestino").value = "";
+			document.getElementById("id_EstadoDestino").value = "";
+			document.getElementById("id_CPDestino").value = "";
+			$("#id_IDTipoUnidad").val("Tipo Unidad").trigger("change"); 
+			document.getElementById("id_IDTipoUnidad").selectedIndex = 0;
+			var modelo=document.getElementById('id_IDModelo');
+			$(modelo).empty();
+			$(modelo).append($('<option>').text('Modelo').attr('value',0));
+			document.getElementById("id_CasetasAux").value = convertidorDivisaMXN(1);
+			document.getElementById('id_Casetas').value = 1;
+			document.getElementById("id_Producto").value = "";
+			document.getElementById("id_ViajeRedondo").checked = false;
+			document.getElementById("id_FactorAjustePor").value = 0;
+			document.getElementById("id_FactorAjusteAux").value = convertidorDivisaMXN(0);
+			document.getElementById("id_FactorAjuste").value = 0;
+			document.getElementById("id_MopPor").value = 15;
+			document.getElementById("id_MopAux").value = convertidorDivisaMXN(0);
+			document.getElementById("id_Mop").value = 0;
+			codO = "";
+			codD = "";
+			document.getElementById("tdCostoUnidad").innerHTML = convertidorDivisaMXN(0);
+			document.getElementById("costosUnidadId").value = 0;
+			document.getElementById("tdCostosCaja").innerHTML = convertidorDivisaMXN(0);
+			document.getElementById("costosCajaId").value = 0;
+			document.getElementById("tdKmSencillo").value = convertidorFormatoNum(1);
+		    document.getElementById("kmSencilloId").value = 1;
+			document.getElementById("tdCasetaSingle").value = convertidorFormatoNum(1);
+	        document.getElementById("casetaSingleId").value = 1;
+
+			if(idR.value != "Ruta"){
+				$.ajax({
+					url:  'buscarRutaCosto/',
+					type: 'POST',
+					dataType: 'json',
+					ContentType: 'application/json; charset=utf-8',
+					data: {'data':JSON.stringify({'idR' : idR.value}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+					success: function (data) {
+						document.getElementById("id_KilometrosAux").value = convertidorFormatoNum(Math.round(data.Kilometros));
+						document.getElementById("id_Kilometros").value = Math.round(data.Kilometros);
+						document.getElementById("id_CiudadOrigen").value = data.CiudadOrigen;
+						document.getElementById("id_EstadoOrigen").value = data.EstadoOrigen;
+						document.getElementById("id_CPOrigen").value = data.CPOrigen;
+						document.getElementById("id_CiudadDestino").value = data.CiudadDestino;
+						document.getElementById("id_EstadoDestino").value = data.EstadoDestino;
+						document.getElementById("id_CPDestino").value = data.CPDestino;
+						document.getElementById("tdKmSencillo").value =  convertidorFormatoNum(Math.round(data.Kilometros));
+						document.getElementById("kmSencilloId").value = Math.round(data.Kilometros);
+						
+						if(document.getElementById('kmSencilloId').value != "" && document.getElementById('id_Casetas').value != "" && document.getElementById('id_Kilometros').value != ""){
+							CalculaCosteo();
+							filltables();
+						}
+						
+						$.ajax({
+                            url:  'IdCdCosto/',
+                            type: 'POST',
+                            dataType: 'json',
+                            ContentType: 'application/json; charset=utf-8',
+                            data: {'data': JSON.stringify({ 'ciudad' : data.CiudadOrigen, 'estado' : data.EstadoOrigen}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                            success: function (data) {
+                                if(data.bandera==2){                      
+                                    codO = data.cod;
+                                    procedimiento();
+                                }
+                            }
+                        });
+
+						$.ajax({
+                            url:  'IdCdCosto/',
+                            type: 'POST',
+                            dataType: 'json',
+                            ContentType: 'application/json; charset=utf-8',
+                            data: {'data': JSON.stringify({ 'ciudad' : data.CiudadDestino, 'estado' : data.EstadoDestino}),"csrfmiddlewaretoken" : "{{csrf_token}}"},
+                            success: function (data) {
+                                if(data.bandera==2){                      
+                                    codD = data.cod;
+                                    procedimiento();
+                                }
+                            }
+						});
+					}
+				});
+			}
+			else{
+				if(document.getElementById('kmSencilloId').value != "" && document.getElementById('id_Casetas').value != "" && document.getElementById('id_Kilometros').value != ""){
+					CalculaCosteo();
+					filltables();
+				}	
+			}
+		}
+
+		function procedimiento(){
+			var IDTipoUnidad = document.getElementById("id_IDTipoUnidad").value;
+			var categoriaEje = "";
+			document.getElementById("id_CasetasAux").value =convertidorDivisaMXN(1);
+			document.getElementById('id_Casetas').value = 1;
+			document.getElementById("tdCasetaSingle").value = convertidorFormatoNum(1);
+	        document.getElementById("casetaSingleId").value = 1;
+			modelo=document.getElementById('id_IDModelo');
+			$(modelo).empty();
+			$(modelo).append($('<option>').text('Modelo').attr('value',0));
+			document.getElementById("costosUnidadId").value = 0;
+			document.getElementById("tdCostoUnidad").innerHTML = convertidorDivisaMXN(0);
+			document.getElementById("costosCajaId").value = 0;
+			document.getElementById("tdCostosCaja").innerHTML = convertidorDivisaMXN(0);
+			
+			if(IDTipoUnidad != "Tipo Unidad")
+			{
+				var TU = document.getElementById("id_IDTipoUnidad");
+				categoriaEje = TU.options[TU.selectedIndex].getAttribute("data-categoriaeje");
+				$.ajax({
+                    url:  'selectModelosCosteo/',
+                    type: 'POST',
+                    dataType: 'json',
+                    ContentType: 'application/json; charset=utf-8',
+                    data: {
+                        'data': JSON.stringify({
+                            'IDTipoUnidad':IDTipoUnidad,}),
+                            "csrfmiddlewaretoken" : "{{csrf_token}}"},
+                    beforeSend: function () {
+                    },
+                    success: function (data) {
+                        $(modelo).empty();
+						$("#id_IDModelo").html(data.selectModelosCosteo);
+
+						if(document.getElementById('kmSencilloId').value != "" && document.getElementById('id_Casetas').value != "" && document.getElementById('id_Kilometros').value != ""){
+							CalculaCosteo();
+							filltables();
+						}
+                    }
+                });
+			}
+			else{
+				if(document.getElementById('kmSencilloId').value != "" && document.getElementById('id_Casetas').value != "" && document.getElementById('id_Kilometros').value != ""){
+					CalculaCosteo();
+					filltables();
+				}
+			}
+
+			if(codO!="" && codD !="" && categoriaEje != ""){
+				$.post(servidor+"cuota",
+					{
+					dest_i: codO,
+					dest_f: codD,
+					v: categoriaEje,
+					type:"json",
+					proj:"MERC",
+					key: "x4cGBaOC-423Z-A9ii-AKwM-QWiCfq63rMu9"
+					},
+					function( json ){
+						$(document.getElementById('id_CasetasAux')).val(convertidorDivisaMXN(Math.round(json.data.costo_caseta)));
+						$(document.getElementById('id_Casetas')).val(Math.round(json.data.costo_caseta));
+						if(document.getElementById("id_ViajeRedondo").checked == true){
+							$(document.getElementById('kmSencilloId')).val(document.getElementById("id_Kilometros").value*2);
+							$(document.getElementById('casetaSingleId')).val((document.getElementById('id_Casetas').value*2));
+						}else{
+							$(document.getElementById('kmSencilloId')).val(document.getElementById("id_Kilometros").value);
+							$(document.getElementById('casetaSingleId')).val(document.getElementById('id_Casetas').value);
+						}
+
+						if(document.getElementById('kmSencilloId').value != "" && document.getElementById('id_Casetas').value != "" && document.getElementById('id_Kilometros').value != ""){
+							CalculaCosteo();
+							filltables();
+						}
+				});
+			}
+		}
+
+		function unidadCaja(){
+			valor= document.getElementById("id_IDModelo").value;
+			if(valor!=0){
+				modelo = document.getElementById("id_IDModelo");
+				costoUnidad = modelo.options[modelo.selectedIndex].getAttribute("data-costosunidad");
+				costoCaja = modelo.options[modelo.selectedIndex].getAttribute("data-costoscaja");
+				document.getElementById("costosUnidadId").value = costoUnidad;
+				document.getElementById("tdCostoUnidad").innerHTML = convertidorDivisaMXN(costoUnidad);
+				document.getElementById("costosCajaId").value = costoCaja;
+				document.getElementById("tdCostosCaja").innerHTML = convertidorDivisaMXN(costoCaja);
+			}
+			else{
+				document.getElementById("costosUnidadId").value = 0;
+				document.getElementById("tdCostoUnidad").innerHTML = convertidorDivisaMXN(0);
+				document.getElementById("costosCajaId").value = 0;
+				document.getElementById("tdCostosCaja").innerHTML = convertidorDivisaMXN(0);
+			}
+
+			if(document.getElementById('kmSencilloId').value != "" && document.getElementById('id_Casetas').value != "" && document.getElementById('id_Kilometros').value != ""){
+				CalculaCosteo();
+				filltables();
+			}
+		}
+
+        //
+        $("#id_IDRuta").select2({
+            matcher: matchCustom
+		});
+		
+		//
+		$("#id_IDTipoUnidad").select2({
+            matcher: matchCustom
+		});
+
+        function matchCustom(params, data) {
+            // If there are no search terms, return all of the data
+            if ($.trim(params.term) === '') {
+                return data;
+            }
+
+            // Do not display the item if there is no 'text' property
+            if (typeof data.text === 'undefined') {
+                return null;
+            }
+
+            // `params.term` should be the term that is used for searching
+            // `data.text` is the text that is displayed for the data object
+            if (data.text.indexOf(params.term) > -1) {
+				var modifiedData = $.extend({}, data, true);
+				modifiedData.text += ' (matched)';
+
+				// You can return modified objects from here
+				// This includes matching the `children` how you want in nested data sets
+				return modifiedData;
+            }
+
+            // Return `null` if the term should not be displayed
+            return null;
+        }
+		//
+
+		$('#id_ViajeRedondo').on('change',function () {
+			if(document.getElementById("id_ViajeRedondo").checked == true){
+				$(document.getElementById('kmSencilloId')).val(document.getElementById("id_Kilometros").value*2);
+				$(document.getElementById('casetaSingleId')).val(document.getElementById('id_Casetas').value*2);
+			}else{
+				$(document.getElementById('kmSencilloId')).val(document.getElementById("id_Kilometros").value);
+				$(document.getElementById('casetaSingleId')).val(document.getElementById('id_Casetas').value);
+			}
+			if(document.getElementById('kmSencilloId').value != "" && document.getElementById('id_Casetas').value != "" && document.getElementById('id_Kilometros').value != ""){
+				CalculaCosteo();
+				filltables();
+			}
+		});
+
+		var banderaCrear = 1;
+		$('#costeo').on('submit', function(event) {
+			Empresa = document.getElementById("id_Empresa").value;
+			Ruta = document.getElementById("id_IDRuta").value;
+			Kilometros = document.getElementById("id_Kilometros").value;
+			CiudadOrigen = document.getElementById("id_CiudadOrigen").value;
+			EstadoOrigen = document.getElementById("id_EstadoOrigen").value;
+			CPOrigen = document.getElementById("id_CPOrigen").value;
+			CiudadDestino = document.getElementById("id_CiudadDestino").value;
+			EstadoDestino = document.getElementById("id_EstadoDestino").value;
+			CPDestino = document.getElementById("id_CPDestino").value;
+			TipoUnidad = document.getElementById("id_IDTipoUnidad").value;
+			Caseta = document.getElementById("id_Casetas").value;
+			Producto = document.getElementById("id_Producto").value;
+			TotalCostos = document.getElementById("id_TotalCostos").value;
+			FactorAjustePor = document.getElementById("id_FactorAjustePor").value;
+			FactorAjuste = document.getElementById("id_FactorAjuste").value;
+			MopPor = document.getElementById("id_MopPor").value;
+			Mop = document.getElementById("id_Mop").value;
+			TotalTransportistas = document.getElementById("id_TotalTransportista").value;
+
+			if(banderaCrear == 0){
+				return false;
+			}
+
+			if(Empresa == ""){
+				alert("¡Falta el nombre de la empresa!");
+				return false;
+			}
+
+			if(Ruta == "Ruta"){
+				alert("¡Falta una ruta valida!");
+				return false;
+			}
+
+			if(Kilometros == ""){
+				alert("¡Faltan los kilometros!");
+				return false;
+			}
+
+			if(CiudadOrigen == ""){
+				alert("¡Falta la ciudad origen!");
+				return false;
+			}
+
+			if(EstadoOrigen == ""){
+				alert("¡Falta el estado origen!");
+				return false;
+			}
+
+			if(CPOrigen == ""){
+				alert("¡Falta cp origen!");
+				return false;
+			}
+
+			if(CiudadDestino== ""){
+				alert("¡Falta la ciudad destino!");
+				return false;
+			}
+
+			if(EstadoDestino == ""){
+				alert("¡Falta el estado destino!");
+				return false;
+			}
+
+			if(CPDestino == ""){
+				alert("¡Falta cp destino!");
+				return false;
+			}
+
+			if(TipoUnidad == "Tipo Unidad"){
+				alert("¡Falta un tipo unidad valido!");
+				return false;
+			}
+
+			if(Caseta == ""){
+				alert("¡Falta llenar caseta valida!");
+				return false;
+			}
+
+			if(Producto == ""){
+				alert("¡Falta llenar producto valido!");
+				return false;
+			}
+
+			if(TotalCostos == ""){
+				alert("¡Falta calcular total costos!");
+				return false;
+			}
+
+			if(FactorAjustePor == ""){
+				alert("¡Falta colocar un valor valido en factor de ajuste %!");
+				return false;
+			}
+
+			if(FactorAjuste == ""){
+				alert("¡Falta calcular factor de ajuste!");
+				return false;
+			}
+
+			if(MopPor == ""){
+				alert("¡Falta colocar un valor valido en %");
+				return false;
+			}
+
+			if(Mop == ""){
+				alert("¡Falta calcular Mop!");
+				return false;
+			}
+
+			if(TotalTransportistas == ""){
+				alert("¡Falta calcular total transportista!");
+				return false;
+			}
+
+			banderaCrear = 0;
+		});
+	</script>
+{% endblock %}

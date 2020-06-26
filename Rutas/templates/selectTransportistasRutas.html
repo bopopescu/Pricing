@@ -1,0 +1,4 @@
+<option value="0" selected>Transportista</option>
+{% for transportista in transportistas %}
+    <option value="{{transportista.id}}" >{{transportista.RazonSocial}}</option>
+{% endfor %}
