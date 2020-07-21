@@ -189,7 +189,7 @@ class TestRefs(TestBase):
 
     @with_rw_repo('0.1.6')
     def test_head_checkout_detached_head(self, rw_repo):
-        res = rw_repo.remotes.origin.refs.master.checkout()
+        res = rw_repo.remotes.origin.refs.main.checkout()
         assert isinstance(res, SymbolicReference)
         assert res.name == 'HEAD'
 
@@ -517,7 +517,7 @@ class TestRefs(TestBase):
 
         # reattach head - head will not be returned if it is not a symbolic
         # ref
-        rw_repo.head.reference = Head.create(rw_repo, "master")
+        rw_repo.head.reference = Head.create(rw_repo, "main")
 
         # At least the head should still exist
         assert osp.isfile(osp.join(rw_repo.git_dir, 'HEAD'))
@@ -565,4 +565,4 @@ class TestRefs(TestBase):
         assert SymbolicReference.dereference_recursive(self.rorepo, 'HEAD')
 
     def test_reflog(self):
-        assert isinstance(self.rorepo.heads.master.log(), RefLog)
+        assert isinstance(self.rorepo.heads.main.log(), RefLog)
